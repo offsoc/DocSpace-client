@@ -70,6 +70,7 @@
   "CommonFilesDescription": "For the files in the Common section, a separate room will be created (Common room). Only {{productName}} admins will have access to this room. By default, the owner of the room will be the user initiating the import: {{user}} (You).",
   "CompanyInfoSettings": "Company info settings",
   "CompanyInfoSettingsDescription": "This information will be displayed in the <1>{{link}}</1> window.",
+  "CompanyNameTitle": "Your logo will be used in invitations and notifications sent from your DocSpace to email",
   "ConfirmEmailSended": "Confirmation e-mail has been sent to {{ownerName}}",
   "CustomDomainName": "Custom domain name",
   "CustomDomains": "Custom domains",
