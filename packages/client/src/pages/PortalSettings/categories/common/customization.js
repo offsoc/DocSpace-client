@@ -33,6 +33,7 @@ import withLoading from "SRC_DIR/HOCs/withLoading";
 import StyledSettingsSeparator from "SRC_DIR/pages/PortalSettings/StyledSettingsSeparator";
 import { injectDefaultTheme, mobileMore } from "@docspace/shared/utils";
 import { LanguageAndTimeZoneSettings } from "./Customization/language-and-time-zone";
+import { CompanyNameSettings } from "./Customization/company-name-settings";
 import { WelcomePageSettings } from "./Customization/welcome-page-settings";
 import { PortalRenaming } from "./Customization/portal-renaming";
 import { DNSSettings } from "./Customization/dns-settings";
@@ -128,6 +129,8 @@ const Customization = (props) => {
         </div>
       )}
       <LanguageAndTimeZoneSettings isMobileView={viewMobile} />
+      <StyledSettingsSeparator />
+      <CompanyNameSettings />
       <StyledSettingsSeparator />
       <WelcomePageSettings isMobileView={viewMobile} />
       <StyledSettingsSeparator />
