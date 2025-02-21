@@ -13,9 +13,15 @@
   "DomainName": "Domain name",
   "DomainNotFound": "Domain not found, please check in DNS settings",
   "DomainSettings": "Domain settings",
+  "EncryptData": "Encrypt data at rest",
+  "EncryptDataDescription": "ONLYOFFICE uses AES-256 encryption to protect data at rest in storage.",
+  "EncryptDataWarningDescription": "Storage encryption may take time. The spaces will be unavailable during the process. Make sure that you have enough storage and that your data is backed up. Don't forget to disable automatic backups and stop all the running ones. Otherwise, it will be done automatically.",
+  "EncryptStorage": "Encrypt storage",
   "EnterDomain": "Enter domain name",
   "EnterName": "Enter space name",
   "NewSpace": "New space",
+  "NotifyUsers": "Notify users that the space will be unavailable",
+  "MoreDetails": "For more details on how to stop services, please refer to our <1>{{link}}</1>.",
   "PortalDeleted": "{{productName}} permanently deleted",
   "PortalName": "{{productName}} name",
   "PortalStats": "Rooms: {{roomCount}} | Users: {{userCount}} | Storage space used: {{storageSpace}}",
@@ -26,3 +32,4 @@
   "SubmitDelete": "Submit a deletion request",
   "VisitSpace": "Visit this space after creating"
 }
+

@@ -43,6 +43,11 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
       name: t("Common:RestoreBackup"),
       content: children,
     },
+    {
+      id: "encrypt-data",
+      name: t("Common:Storage"),
+      content: children,
+    },
   ];
 
   useEffect(() => {
@@ -88,3 +93,4 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default observer(SettingsLayout);
+

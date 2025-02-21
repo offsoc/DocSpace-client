@@ -59,6 +59,8 @@ export const getHeaderByPathname = (pathname: string, t: TTranslation) => {
       return { key: t("Common:AdditionalResources"), isSubPage: true };
     case "brand-name":
       return { key: t("Common:BrandName"), isSubPage: true };
+    case "storage":
+      return { key: t("Common:Storage"), isSubPage: false };
     case "bonus":
       return { key: t("Common:Bonus"), isSubPage: false };
     default:
