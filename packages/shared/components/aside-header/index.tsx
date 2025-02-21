@@ -103,7 +103,10 @@ const AsideHeader = (props: AsideHeaderProps) => {
       {header ? headerComponent : null}
       {headerIcons.length > 0 ? (
         <div
-          className={styles.additionalIconsContainer}
+          className={classNames(
+            "additional-icons-container",
+            styles.additionalIconsContainer,
+          )}
           data-testid="icons-container"
         >
           {headerIcons.map((item) => (

@@ -28,6 +28,8 @@ import { DeviceType } from "../../enums";
 import { TViewAs } from "../../types";
 import { FloatingButtonIcons } from "../floating-button";
 import { ContextMenuModel } from "../context-menu";
+import { AIChatIsDataType } from "./sub-components/AIChat/AIChat.types";
+import { TUser } from "../../api/people/types";
 
 export type SubInfoPanelHeaderProps = {
   children: React.JSX.Element | null;
@@ -72,8 +74,10 @@ export type SectionBodyProps = {
 };
 
 export type SectionContainerProps = {
+  showTwoProgress?: boolean;
   isSectionHeaderAvailable: boolean;
   isInfoPanelVisible?: boolean;
+  AIChatIsVisible?: boolean;
   viewAs?: TViewAs;
   children: React.ReactNode;
   withBodyScroll: boolean;
@@ -164,12 +168,17 @@ export type SectionProps = Omit<SubInfoPanelHeaderProps, "children"> &
     isTabletView?: boolean;
     isHeaderVisible?: boolean;
     isInfoPanelAvailable?: boolean;
+    AIChatAvailable?: boolean;
+    AIChatUser: TUser;
     isEmptyPage?: boolean;
     maintenanceExist?: boolean;
     snackbarExist?: boolean;
     showText?: boolean;
+    clearUploadedFilesHistory?: () => void;
     isTrashFolder?: boolean;
     setIsInfoPanelVisible?: (value: boolean) => void;
+    setAIChatIsVisible: (value: boolean) => void;
+    AIChatIsData: AIChatIsDataType;
     secondaryOperationsCompleted?: boolean;
     primaryOperationsCompleted?: boolean;
     secondaryActiveOperations: Operation[];

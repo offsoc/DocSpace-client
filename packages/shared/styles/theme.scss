@@ -1049,6 +1049,9 @@
   --info-panel-blur-color: #{$blur-light};
   --info-panel-bg: #{$white};
   --info-panel-border: #{$gray-light-mid};
+  --info-panel-text-color: #{$black};
+
+  --ai-chat-text-color: #{$light-gray-dark};
 }
 
 .dark {
@@ -1056,6 +1059,9 @@
   --info-panel-blur-color: #{$blur-dark};
   --info-panel-bg: #{$black};
   --info-panel-border: #{$gray-dark-strong};
+  --info-panel-text-color: #{$white};
+
+  --ai-chat-text-color: #{$dark-gray-dark};
 }
 
 .light {

@@ -25,7 +25,7 @@
 // International. See the License terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Provider } from "../../utils";
 import { DeviceType } from "../../enums";
@@ -38,6 +38,7 @@ import SubSectionFilter from "./sub-components/SectionFilter";
 import SubSectionBody from "./sub-components/SectionBody";
 import SubSectionBodyContent from "./sub-components/SectionBodyContent";
 import InfoPanel from "./sub-components/InfoPanel";
+import AIChat from "./sub-components/AIChat";
 import SubInfoPanelBody from "./sub-components/InfoPanelBody";
 import SubInfoPanelHeader from "./sub-components/InfoPanelHeader";
 import SubSectionFooter from "./sub-components/SectionFooter";
@@ -93,6 +94,7 @@ const Section = (props: SectionProps) => {
     children,
     onOpenUploadPanel,
     isInfoPanelAvailable = true,
+    AIChatAvailable = true,
     settingsStudio = false,
     isInfoPanelScrollLocked,
     isFormGallery,
@@ -100,6 +102,9 @@ const Section = (props: SectionProps) => {
 
     isInfoPanelVisible,
     setIsInfoPanelVisible,
+    AIChatIsData,
+    AIChatIsVisible,
+    setAIChatIsVisible,
     isMobileHidden,
     canDisplay,
     anotherDialogOpen,
@@ -119,12 +124,15 @@ const Section = (props: SectionProps) => {
 
     primaryOperationsAlert,
     needErrorChecking,
+    AIChatUser,
   } = props;
 
   const [sectionSize, setSectionSize] = React.useState<{
     width?: number;
     height?: number;
   }>({});
+
+  const [sectionIsVisible, setSectionIsVisible] = useState(true);
 
   const containerRef = React.useRef<null | HTMLDivElement>(null);
   const timerRef = React.useRef<null | ReturnType<typeof setTimeout>>(null);
@@ -226,99 +234,117 @@ const Section = (props: SectionProps) => {
   return (
     isSectionAvailable && (
       <Provider value={providerValue}>
-        <SectionContainer
-          viewAs={viewAs}
-          ref={containerRef}
-          isSectionHeaderAvailable={isSectionHeaderAvailable}
-          isInfoPanelVisible={isInfoPanelVisible}
-          withBodyScroll={withBodyScroll}
-          currentDeviceType={currentDeviceType}
-        >
-          {currentDeviceType !== DeviceType.mobile ? (
-            <div className="section-sticky-container">
-              {isSectionHeaderAvailable ? (
-                <SubSectionHeader
-                  className="section-header_header"
-                  isFormGallery={isFormGallery}
-                >
-                  {sectionHeaderContent}
-                </SubSectionHeader>
-              ) : null}
+        {sectionIsVisible ? (
+          <SectionContainer
+            viewAs={viewAs}
+            ref={containerRef}
+            isSectionHeaderAvailable={isSectionHeaderAvailable}
+            isInfoPanelVisible={isInfoPanelVisible}
+            withBodyScroll={withBodyScroll}
+            currentDeviceType={currentDeviceType}
+          >
+            {currentDeviceType !== DeviceType.mobile ? (
+              <div className="section-sticky-container">
+                {isSectionHeaderAvailable ? (
+                  <SubSectionHeader
+                    className="section-header_header"
+                    isFormGallery={isFormGallery}
+                  >
+                    {sectionHeaderContent}
+                  </SubSectionHeader>
+                ) : null}
 
-              {isSectionSubmenuAvailable ? (
-                <SubSectionSubmenu>{sectionSubmenuContent}</SubSectionSubmenu>
-              ) : null}
+                {isSectionSubmenuAvailable ? (
+                  <SubSectionSubmenu>{sectionSubmenuContent}</SubSectionSubmenu>
+                ) : null}
 
-              {isSectionFilterAvailable &&
-              currentDeviceType === DeviceType.desktop ? (
-                <SubSectionFilter className="section-header_filter">
-                  {sectionFilterContent}
-                </SubSectionFilter>
-              ) : null}
-            </div>
-          ) : null}
+                {isSectionFilterAvailable &&
+                currentDeviceType === DeviceType.desktop ? (
+                  <SubSectionFilter className="section-header_filter">
+                    {sectionFilterContent}
+                  </SubSectionFilter>
+                ) : null}
+              </div>
+            ) : null}
 
-          {isSectionBodyAvailable ? (
-            <SubSectionBody
-              onDrop={onDrop}
-              uploadFiles={uploadFiles}
-              withScroll={withBodyScroll}
-              autoFocus={currentDeviceType === DeviceType.desktop}
-              viewAs={viewAs}
-              settingsStudio={settingsStudio}
-              isFormGallery={isFormGallery}
-              currentDeviceType={currentDeviceType}
-              getContextModel={getContextModel}
-              isIndexEditingMode={isIndexEditingMode}
-              pathname={pathname}
-            >
-              {isSectionHeaderAvailable &&
-              currentDeviceType === DeviceType.mobile ? (
-                <SubSectionHeader
-                  className="section-body_header"
-                  isFormGallery={isFormGallery}
-                >
-                  {sectionHeaderContent}
-                </SubSectionHeader>
-              ) : null}
-              {currentDeviceType !== DeviceType.desktop ? (
-                <SubSectionWarning>{sectionWarningContent}</SubSectionWarning>
-              ) : null}
-              {isSectionSubmenuAvailable &&
-              currentDeviceType === DeviceType.mobile ? (
-                <SubSectionSubmenu>{sectionSubmenuContent}</SubSectionSubmenu>
-              ) : null}
-              {isSectionFilterAvailable &&
-              currentDeviceType !== DeviceType.desktop ? (
-                <SubSectionFilter className="section-body_filter">
-                  {sectionFilterContent}
-                </SubSectionFilter>
-              ) : null}
-              <SubSectionBodyContent>
-                {sectionBodyContent}
-              </SubSectionBodyContent>
-              <SubSectionFooter>{sectionFooterContent}</SubSectionFooter>
-            </SubSectionBody>
-          ) : null}
+            {isSectionBodyAvailable ? (
+              <SubSectionBody
+                onDrop={onDrop}
+                uploadFiles={uploadFiles}
+                withScroll={withBodyScroll}
+                autoFocus={currentDeviceType === DeviceType.desktop}
+                viewAs={viewAs}
+                settingsStudio={settingsStudio}
+                isFormGallery={isFormGallery}
+                currentDeviceType={currentDeviceType}
+                getContextModel={getContextModel}
+                isIndexEditingMode={isIndexEditingMode}
+                pathname={pathname}
+              >
+                {isSectionHeaderAvailable &&
+                currentDeviceType === DeviceType.mobile ? (
+                  <SubSectionHeader
+                    className="section-body_header"
+                    isFormGallery={isFormGallery}
+                  >
+                    {sectionHeaderContent}
+                  </SubSectionHeader>
+                ) : null}
+                {currentDeviceType !== DeviceType.desktop ? (
+                  <SubSectionWarning>{sectionWarningContent}</SubSectionWarning>
+                ) : null}
+                {isSectionSubmenuAvailable &&
+                currentDeviceType === DeviceType.mobile ? (
+                  <SubSectionSubmenu>{sectionSubmenuContent}</SubSectionSubmenu>
+                ) : null}
+                {isSectionFilterAvailable &&
+                currentDeviceType !== DeviceType.desktop ? (
+                  <SubSectionFilter className="section-body_filter">
+                    {sectionFilterContent}
+                  </SubSectionFilter>
+                ) : null}
+                <SubSectionBodyContent>
+                  {sectionBodyContent}
+                </SubSectionBodyContent>
+                <SubSectionFooter>{sectionFooterContent}</SubSectionFooter>
+              </SubSectionBody>
+            ) : null}
 
-          {isShowOperationButton ? (
-            <OperationsProgress
-              clearSecondaryProgressData={clearSecondaryProgressData}
-              secondaryActiveOperations={secondaryActiveOperations}
-              operationsCompleted={isCompletedOperations()}
-              clearPrimaryProgressData={clearPrimaryProgressData}
-              operationsAlert={
-                primaryOperationsAlert || secondaryOperationsAlert
-              }
-              needErrorChecking={needErrorChecking}
-              primaryActiveOperations={primaryOperationsArray}
-              cancelUpload={cancelUpload}
-              onOpenPanel={onOpenUploadPanel}
-              mainButtonVisible={mainButtonVisible}
-              showCancelButton={showCancelButton}
-            />
-          ) : null}
-        </SectionContainer>
+            {isShowOperationButton ? (
+              <OperationsProgress
+                clearSecondaryProgressData={clearSecondaryProgressData}
+                secondaryActiveOperations={secondaryActiveOperations}
+                operationsCompleted={isCompletedOperations()}
+                clearPrimaryProgressData={clearPrimaryProgressData}
+                operationsAlert={
+                  primaryOperationsAlert || secondaryOperationsAlert
+                }
+                needErrorChecking={needErrorChecking}
+                primaryActiveOperations={primaryOperationsArray}
+                cancelUpload={cancelUpload}
+                onOpenPanel={onOpenUploadPanel}
+                mainButtonVisible={mainButtonVisible}
+                showCancelButton={showCancelButton}
+              />
+            ) : null}
+          </SectionContainer>
+        ) : null}
+
+        {AIChatAvailable ? (
+          <AIChat
+            AIChatIsData={AIChatIsData}
+            isVisible={AIChatIsVisible}
+            setIsVisible={setAIChatIsVisible}
+            AIChatUser={AIChatUser}
+            isMobileHidden={isMobileHidden}
+            canDisplay={canDisplay}
+            anotherDialogOpen={anotherDialogOpen}
+            viewAs={viewAs}
+            currentDeviceType={currentDeviceType}
+            sectionIsVisible={sectionIsVisible}
+            setSectionIsVisible={setSectionIsVisible}
+          />
+        ) : null}
 
         {isInfoPanelAvailable ? (
           <InfoPanel
