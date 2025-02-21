@@ -48,11 +48,15 @@ export default inject(
     dialogsStore,
     infoPanelStore,
     indexingStore,
+    pluginStore,
+    userStore,
   }: {
     settingsStore: any;
     dialogsStore: any;
     infoPanelStore: any;
     indexingStore: any;
+    pluginStore: any;
+    userStore: any;
   }) => {
     const {
       isDesktopClient: isDesktop,
@@ -64,8 +68,13 @@ export default inject(
       showText,
     } = settingsStore;
 
-    const { isVisible, isMobileHidden, setIsVisible, getCanDisplay } =
-      infoPanelStore;
+    const {
+      isVisible,
+      isMobileHidden,
+      setIsVisible,
+      getCanDisplay,
+      isScrollLocked: isInfoPanelScrollLocked,
+    } = infoPanelStore;
 
     const { isIndexEditingMode } = indexingStore;
 
@@ -76,7 +85,7 @@ export default inject(
     const anotherDialogOpen =
       createRoomDialogVisible || invitePanelOptions.visible;
 
-    const { isScrollLocked: isInfoPanelScrollLocked } = infoPanelStore;
+    const { AIChatIsVisible, AIChatIsData, setAIChatIsVisible } = pluginStore;
 
     return {
       isDesktop,
@@ -92,6 +101,10 @@ export default inject(
       snackbarExist,
       showText,
       isInfoPanelScrollLocked,
+      AIChatIsData,
+      AIChatIsVisible,
+      AIChatUser: userStore.user,
+      setAIChatIsVisible,
     };
   },
 )(observer(SectionWrapper));

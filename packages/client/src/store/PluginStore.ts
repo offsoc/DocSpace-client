@@ -64,6 +64,7 @@ import {
 } from "../helpers/plugins/enums";
 
 import SelectedFolderStore from "./SelectedFolderStore";
+import { AIChatIsDataType } from "@docspace/shared/components/section/sub-components/AIChat/AIChat.types";
 
 const { api: apiConf, proxy: proxyConf } = defaultConfig;
 const { origin: apiOrigin, prefix: apiPrefix } = apiConf;
@@ -117,6 +118,10 @@ class PluginStore {
 
   needPageReload = false;
 
+  AIChatIsVisible = false;
+
+  AIChatIsData: null | AIChatIsDataType = null;
+
   constructor(
     settingsStore: SettingsStore,
     selectedFolderStore: SelectedFolderStore,
@@ -163,6 +168,14 @@ class PluginStore {
 
   setDeletePluginDialogProps = (value: null | { pluginName: string }) => {
     this.deletePluginDialogProps = value;
+  };
+
+  setAIChatIsVisible = (
+    isVisible: boolean,
+    chatData?: { filesId: string[]; folderId: number },
+  ) => {
+    this.AIChatIsVisible = isVisible;
+    this.AIChatIsData = chatData ?? null;
   };
 
   updatePluginStatus = (name: string) => {

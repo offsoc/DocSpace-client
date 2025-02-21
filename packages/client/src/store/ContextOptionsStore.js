@@ -1836,6 +1836,26 @@ class ContextOptionsStore {
         disabled: false,
       },
       {
+        id: "option_ai-chat", // TODO: AI
+        key: "ai-chat",
+        label: "AI Chat", // TODO: AI
+        icon: InfoOutlineReactSvgUrl,
+        onClick: () =>
+          this.pluginStore.setAIChatIsVisible(
+            true,
+            item.isFolder
+              ? {
+                  filesId: [],
+                  folderId: item.id, // TODO: AI check info-panel
+                }
+              : {
+                  filesId: [item.id],
+                  folderId: this.selectedFolderStore.id, // TODO: AI check info-panel
+                },
+          ),
+        disabled: false,
+      },
+      {
         id: "option_block-unblock-version",
         key: "block-unblock-version",
         label: t("UnblockVersion"),

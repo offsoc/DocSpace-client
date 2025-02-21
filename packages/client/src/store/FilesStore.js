@@ -2209,6 +2209,7 @@ class FilesStore {
         "delete",
         "remove-from-recent",
         "copy-general-link",
+        "ai-chat", // TODO: AI
       ];
 
       if (optionsToRemove.length) {
@@ -2532,6 +2533,7 @@ class FilesStore {
         "leave-room",
         "delete",
         "remove-shared-room",
+        "ai-chat", // TODO: AI
       ];
 
       if (!item.external) {
@@ -2668,6 +2670,7 @@ class FilesStore {
       "separator2",
       // "unsubscribe",
       "delete",
+      "ai-chat", // TODO: AI
     ];
 
     if (optionsToRemove.length) {
