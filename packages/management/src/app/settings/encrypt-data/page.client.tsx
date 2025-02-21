@@ -35,11 +35,15 @@ import { Checkbox } from "@docspace/shared/components/checkbox";
 import { Link } from "@docspace/shared/components/link";
 import { Button, ButtonSize } from "@docspace/shared/components/button";
 
+import { useStores } from "@/hooks/useStores";
 import { StyledWrapper } from "./page.styled";
 
 const EncryptDataPage = () => {
   const { t } = useTranslation(["Management", "Common"]);
   const { currentColorScheme } = useTheme();
+
+  const { spacesStore } = useStores();
+  const { setEncryptWarningDialogVisible } = spacesStore;
 
   const [isNotifyChecked, setIsNotifyChecked] = useState(false);
 
@@ -89,7 +93,12 @@ const EncryptDataPage = () => {
           onChange={() => setIsNotifyChecked(!isNotifyChecked)}
           isChecked={isNotifyChecked}
         />
-        <Button primary label={t("EncryptStorage")} size={ButtonSize.normal} />
+        <Button
+          primary
+          label={t("EncryptStorage")}
+          size={ButtonSize.normal}
+          onClick={() => setEncryptWarningDialogVisible(true)}
+        />
       </div>
     </StyledWrapper>
   );

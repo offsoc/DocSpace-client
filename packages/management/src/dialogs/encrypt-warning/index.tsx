@@ -1,4 +1,4 @@
-// (c) Copyright Ascensio System SIA 2009-2024
+// (c) Copyright Ascensio System SIA 2009-2025
 //
 // This program is a free software product.
 // You can redistribute it and/or modify it under the terms
@@ -27,48 +27,61 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { observer } from "mobx-react";
 
-import type { TSettings } from "@docspace/shared/api/settings/types";
-import type { TUser } from "@docspace/shared/api/people/types";
+import { Text } from "@docspace/shared/components/text";
+import { Button, ButtonSize } from "@docspace/shared/components/button";
+import {
+  ModalDialog,
+  ModalDialogType,
+} from "@docspace/shared/components/modal-dialog";
 
 import { useStores } from "@/hooks/useStores";
 
-import { ChangeDomainDialog } from "./change-domain";
-import { CreatePortalDialog } from "./create-portal";
-import { DeletePortalDialog } from "./delete-portal";
-import { ConnectDialog } from "./connect-dialog";
-import { EncryptWarningDialog } from "./encrypt-warning";
+export const EncryptWarningDialog = observer(() => {
+  const { spacesStore } = useStores();
 
-export const ManagementDialogs = observer(
-  ({ settings, user }: { settings: TSettings; user: TUser }) => {
-    const { spacesStore } = useStores();
-    const {
-      domainDialogVisible,
-      createPortalDialogVisible,
-      deletePortalDialogVisible,
-      connectDialogVisible,
-      encryptWarningDialogVisible,
-    } = spacesStore;
+  const {
+    encryptWarningDialogVisible: visible,
+    setEncryptWarningDialogVisible,
+  } = spacesStore;
 
-    const { tenantAlias, baseDomain, domainValidator } = settings;
+  const { t } = useTranslation(["Management", "Common"]);
 
-    return (
-      <>
-        {domainDialogVisible && <ChangeDomainDialog />}
-        {createPortalDialogVisible && (
-          <CreatePortalDialog
-            tenantAlias={tenantAlias}
-            baseDomain={baseDomain}
-            domainValidator={domainValidator}
-            user={user}
-          />
-        )}
-        {deletePortalDialogVisible && <DeletePortalDialog />}
-        {connectDialogVisible && <ConnectDialog />}
-        {encryptWarningDialogVisible && <EncryptWarningDialog />}
-      </>
-    );
-  },
-);
+  const onConfirm = () => {};
+
+  const onClose = () => setEncryptWarningDialogVisible(false);
+
+  return (
+    <ModalDialog
+      visible={visible}
+      onClose={onClose}
+      displayType={ModalDialogType.modal}
+      autoMaxHeight
+    >
+      <ModalDialog.Header>{t("Common:Confirmation")}</ModalDialog.Header>
+      <ModalDialog.Body>
+        <Text>{t("EncryptWarningDialogContent")}</Text>
+      </ModalDialog.Body>
+      <ModalDialog.Footer>
+        <Button
+          key="CreateButton"
+          label={t("Common:OK")}
+          size={ButtonSize.normal}
+          scale
+          primary
+          onClick={onConfirm}
+        />
+        <Button
+          key="CancelButton"
+          label={t("Common:CancelButton")}
+          size={ButtonSize.normal}
+          onClick={onClose}
+          scale
+        />
+      </ModalDialog.Footer>
+    </ModalDialog>
+  );
+});
 

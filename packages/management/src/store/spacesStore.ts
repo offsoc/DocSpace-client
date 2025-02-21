@@ -35,6 +35,7 @@ export class SpacesStore {
   deletePortalDialogVisible = false;
   domainDialogVisible = false;
   connectDialogVisible = false;
+  encryptWarningDialogVisible = false;
 
   currentPortal = false;
 
@@ -73,6 +74,10 @@ export class SpacesStore {
 
   setConnectDialogVisible = (connectDialogVisible: boolean) => {
     this.connectDialogVisible = connectDialogVisible;
+  };
+
+  setEncryptWarningDialogVisible = (encryptWarningDialogVisible: boolean) => {
+    this.encryptWarningDialogVisible = encryptWarningDialogVisible;
   };
 }
 
