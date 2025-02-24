@@ -39,6 +39,8 @@ export class SpacesStore {
 
   currentPortal = false;
 
+  isNotifyChecked = false;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -78,6 +80,10 @@ export class SpacesStore {
 
   setEncryptWarningDialogVisible = (encryptWarningDialogVisible: boolean) => {
     this.encryptWarningDialogVisible = encryptWarningDialogVisible;
+  };
+
+  setIsNotifyChecked = (isNotifyChecked: boolean) => {
+    this.isNotifyChecked = isNotifyChecked;
   };
 }
 

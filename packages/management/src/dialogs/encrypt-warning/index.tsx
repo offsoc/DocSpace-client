@@ -36,6 +36,9 @@ import {
   ModalDialog,
   ModalDialogType,
 } from "@docspace/shared/components/modal-dialog";
+import { toastr } from "@docspace/shared/components/toast";
+
+import { startEncryption } from "@docspace/shared/api/settings";
 
 import { useStores } from "@/hooks/useStores";
 
@@ -45,11 +48,19 @@ export const EncryptWarningDialog = observer(() => {
   const {
     encryptWarningDialogVisible: visible,
     setEncryptWarningDialogVisible,
+    isNotifyChecked,
   } = spacesStore;
 
   const { t } = useTranslation(["Management", "Common"]);
 
-  const onConfirm = () => {};
+  const onConfirm = async () => {
+    try {
+      await startEncryption(isNotifyChecked);
+      setEncryptWarningDialogVisible(false);
+    } catch (error) {
+      toastr.error(error);
+    }
+  };
 
   const onClose = () => setEncryptWarningDialogVisible(false);
 

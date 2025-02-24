@@ -25,7 +25,6 @@
 // International. See the License terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 
 "use client";
-import { useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useTheme } from "styled-components";
 
@@ -43,9 +42,11 @@ const EncryptDataPage = () => {
   const { currentColorScheme } = useTheme();
 
   const { spacesStore } = useStores();
-  const { setEncryptWarningDialogVisible } = spacesStore;
-
-  const [isNotifyChecked, setIsNotifyChecked] = useState(false);
+  const {
+    setEncryptWarningDialogVisible,
+    isNotifyChecked,
+    setIsNotifyChecked,
+  } = spacesStore;
 
   return (
     <StyledWrapper>
