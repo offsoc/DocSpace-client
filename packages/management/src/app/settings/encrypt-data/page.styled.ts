@@ -25,6 +25,7 @@
 // International. See the License terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 
 import styled from "styled-components";
+import { globalColors } from "@docspace/shared/themes";
 
 export const StyledWrapper = styled.div`
   max-width: 700px;
@@ -50,6 +51,14 @@ export const StyledWrapper = styled.div`
   .checkbox {
     margin-top: 20px;
     margin-bottom: 24px;
+  }
+
+  .badge {
+    margin-inline-start: 4px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid ${globalColors.lightStatusPositive};
+    color: ${globalColors.lightStatusPositive};
   }
 `;
 

@@ -34,10 +34,12 @@ import { Checkbox } from "@docspace/shared/components/checkbox";
 import { Link } from "@docspace/shared/components/link";
 import { Button, ButtonSize } from "@docspace/shared/components/button";
 
+import { EncryptionStatus } from "@docspace/shared/enums";
+
 import { useStores } from "@/hooks/useStores";
 import { StyledWrapper } from "./page.styled";
 
-const EncryptDataPage = () => {
+const EncryptDataPage = ({ status }: { status: EncryptionStatus }) => {
   const { t } = useTranslation(["Management", "Common"]);
   const { currentColorScheme } = useTheme();
 
@@ -63,6 +65,13 @@ const EncryptDataPage = () => {
             </Text>
           }
         />
+        {status === EncryptionStatus.Encrypted ? (
+          <div className="badge">
+            <Text fontSize="14px" fontWeight={600}>
+              {t("StorageEncrypted")}
+            </Text>
+          </div>
+        ) : null}
       </div>
       <Text>{t("EncryptDataDescription")}</Text>
       <div className="wrapper-block">
@@ -96,7 +105,11 @@ const EncryptDataPage = () => {
         />
         <Button
           primary
-          label={t("EncryptStorage")}
+          label={
+            status === EncryptionStatus.Encrypted
+              ? t("DecryptStorage")
+              : t("EncryptStorage")
+          }
           size={ButtonSize.normal}
           onClick={() => setEncryptWarningDialogVisible(true)}
         />
