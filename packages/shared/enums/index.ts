@@ -657,3 +657,10 @@ export enum ValidationStatus {
   InvalidPassword = 4,
   ExternalAccessDenied = 5,
 }
+
+export enum EncryptionStatus {
+  Decrypted = 0,
+  EncryptionStarted = 1,
+  Encrypted = 2,
+  DecryptionStarted = 3,
+}

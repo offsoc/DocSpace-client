@@ -24,7 +24,7 @@
 // content are licensed under the terms of the Creative Commons Attribution-ShareAlike 4.0
 // International. See the License terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 
-import { RecaptchaType, TenantStatus } from "../../enums";
+import { RecaptchaType, TenantStatus, EncryptionStatus } from "../../enums";
 import { TColorScheme } from "../../themes";
 
 export type TTfaType = "sms" | "app" | "none";
@@ -333,4 +333,10 @@ export type TStorageBackup = {
   isSet: boolean;
   title: string;
   properties: PropertiesType[];
+};
+
+export type TEncryptionSettings = {
+  password: string;
+  status: EncryptionStatus;
+  notifyUsers: boolean;
 };
