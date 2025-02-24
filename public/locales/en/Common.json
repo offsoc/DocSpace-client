@@ -180,6 +180,8 @@
   "EncryptingFile": "Encrypting file",
   "EncryptionFilePreparing": "Preparing file for encryption",
   "EncryptionKeysReload": "Encryption keys must be re-entered",
+  "EncryptionPortalTitle": "The encryption process in progress",
+  "EncryptionPortalSubtitle": "As soon as the process is over, the portal data will be avallable for work.",
   "EnterName": "Enter name",
   "EnterPasswordDescription": "File <1>«{{fileName}}»</1> is located in the password-protected room. Please enter a password for the room",
   "EnterpriseLicense": "Enterprise",
