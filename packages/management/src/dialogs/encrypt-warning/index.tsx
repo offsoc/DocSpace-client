@@ -29,6 +29,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { observer } from "mobx-react";
+import { useRouter } from "next/navigation";
 
 import { Text } from "@docspace/shared/components/text";
 import { Button, ButtonSize } from "@docspace/shared/components/button";
@@ -43,6 +44,7 @@ import { startEncryption } from "@docspace/shared/api/settings";
 import { useStores } from "@/hooks/useStores";
 
 export const EncryptWarningDialog = observer(() => {
+  const router = useRouter();
   const { spacesStore } = useStores();
 
   const {
@@ -57,8 +59,9 @@ export const EncryptWarningDialog = observer(() => {
     try {
       await startEncryption(isNotifyChecked);
       setEncryptWarningDialogVisible(false);
+      router.refresh();
     } catch (error) {
-      toastr.error(error);
+      toastr.error(error!);
     }
   };
 
