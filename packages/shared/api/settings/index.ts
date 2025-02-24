@@ -1276,3 +1276,22 @@ export function getCronLdap() {
 
   return request(options);
 }
+
+export function startEncryption(notifyUsers) {
+  const options = {
+    method: "post",
+    url: "/settings/encryption/start",
+    data: { notifyUsers },
+  };
+
+  return request(options);
+}
+
+export function getEncryptionProgress() {
+  const options = {
+    method: "get",
+    url: "/settings/encryption/progress",
+  };
+
+  return request(options);
+}
