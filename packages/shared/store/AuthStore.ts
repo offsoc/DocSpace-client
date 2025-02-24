@@ -178,7 +178,11 @@ class AuthStore {
     const isPortalRestore =
       this.settingsStore?.tenantStatus === TenantStatus.PortalRestore;
 
-    if (!isPortalRestore) requests.push(this.getCapabilities());
+    const isPortalEncryption =
+      this.settingsStore?.tenantStatus === TenantStatus.EncryptionProcess;
+
+    if (!isPortalRestore && !isPortalEncryption)
+      requests.push(this.getCapabilities());
 
     if (
       this.settingsStore?.isLoaded &&
@@ -187,7 +191,11 @@ class AuthStore {
     ) {
       requests.push(
         this.userStore?.init(i18n, this.settingsStore.culture).then(() => {
-          if (!isPortalRestore && this.userStore?.isAuthenticated) {
+          if (
+            !isPortalRestore &&
+            !isPortalEncryption &&
+            this.userStore?.isAuthenticated
+          ) {
             this.getPaymentInfo();
           } else {
             this.isPortalInfoLoaded = true;
@@ -206,11 +214,11 @@ class AuthStore {
       }
 
       if (this.isAuthenticated && !skipRequest && user) {
-        if (!isPortalRestore && !isPortalDeactivated)
+        if (!isPortalRestore && !isPortalDeactivated && !isPortalEncryption)
           requests.push(this.settingsStore?.getAdditionalResources());
 
         if (!this.settingsStore?.passwordSettings) {
-          if (!isPortalRestore && !isPortalDeactivated) {
+          if (!isPortalRestore && !isPortalDeactivated && !isPortalEncryption) {
             requests.push(this.settingsStore?.getCompanyInfoSettings());
           }
         }
@@ -221,7 +229,8 @@ class AuthStore {
         this.settingsStore?.standalone &&
         !this.settingsStore?.wizardToken &&
         this.isAuthenticated &&
-        user.isAdmin
+        user.isAdmin &&
+        !isPortalEncryption
       ) {
         requests.push(this.settingsStore.getPortals());
       }

@@ -131,7 +131,7 @@ export const PrivateRoute = (props: PrivateRouteProps) => {
     const isPortalUrl =
       location.pathname === "/preparation-portal" ||
       location.pathname === "/management/preparation-portal";
-
+    const isEncryptionUrl = location.pathname === "/encryption-portal";
     const isPaymentsUrl =
       location.pathname === "/portal-settings/payments/portal-payments";
     const isBackupUrl =
@@ -207,6 +207,19 @@ export const PrivateRoute = (props: PrivateRouteProps) => {
       return <Navigate replace to="/" />;
     }
 
+    if (
+      isLoaded &&
+      isAuthenticated &&
+      tenantStatus === TenantStatus.EncryptionProcess &&
+      !isEncryptionUrl
+    ) {
+      return (
+        <Navigate
+          replace
+          to={combineUrl(window.ClientConfig?.proxy?.url, "/encryption-portal")}
+        />
+      );
+    }
     if (
       isLoaded &&
       isAuthenticated &&
