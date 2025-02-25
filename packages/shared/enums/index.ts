@@ -658,6 +658,14 @@ export enum ValidationStatus {
   ExternalAccessDenied = 5,
 }
 
+export enum FormFillingTipsState {
+  Starting = 1,
+  Sharing = 2,
+  Submitting = 3,
+  Complete = 4,
+  Uploading = 5,
+}
+
 export enum EncryptionStatus {
   Decrypted = 0,
   EncryptionStarted = 1,

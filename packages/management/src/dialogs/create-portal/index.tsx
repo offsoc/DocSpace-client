@@ -143,13 +143,13 @@ export const CreatePortalDialog = observer(
 
             // await settingsStore.getAllPortals();
             onClose();
+            router.refresh();
           })
           .catch((error) => {
             setRegisterError(error?.response?.data?.message);
           })
           .finally(() => {
             setIsLoading(false);
-            router.refresh();
           });
       }
     };
@@ -190,6 +190,7 @@ export const CreatePortalDialog = observer(
               hasError={!!registerError}
               placeholder={t("EnterName")}
               className="create-portal-input"
+              isAutoFocussed
             />
             <div>
               <Text className="error-text" fontSize="12px" fontWeight="400">
