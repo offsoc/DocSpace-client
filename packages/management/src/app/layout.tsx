@@ -27,7 +27,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@docspace/shared/utils/next-ssr-helper";
-import { ThemeKeys } from "@docspace/shared/enums";
+import { TenantStatus, ThemeKeys } from "@docspace/shared/enums";
 import { SYSTEM_THEME_KEY } from "@docspace/shared/constants";
 
 import { Toast } from "@docspace/shared/components/toast";
@@ -65,6 +65,9 @@ export default async function RootLayout({
   );
 
   if (settings === "access-restricted") redirect(`${getBaseUrl()}/${settings}`);
+
+  if (settings?.tenantStatus === TenantStatus.EncryptionProcess)
+    redirect(`${getBaseUrl()}/encryption-portal`);
 
   if (
     (user && !user.isAdmin) ||
