@@ -52,10 +52,20 @@ export function middleware(request: NextRequest) {
   if (!isAuth) {
     return NextResponse.redirect(`${redirectUrl}/login`);
   }
+
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/management/spaces", request.url));
+  }
+
+  if (request.nextUrl.pathname === "/settings") {
+    return NextResponse.redirect(
+      new URL("/management/settings/branding", request.url),
+    );
+  }
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/health", "/"],
+  matcher: ["/health", "/", "/settings"],
 };
 

@@ -26,6 +26,9 @@
 
 import moment from "moment-timezone";
 import { TTranslation } from "@docspace/shared/types";
+import type { TPaymentQuota } from "@docspace/shared/api/portal/types";
+import type { TPortals } from "@docspace/shared/api/management/types";
+import type { TDefaultWhiteLabel } from "@/types";
 
 export const getMinifyTitle = (title: string) => {
   const titleArr = title.split(" ");
@@ -69,31 +72,37 @@ export const getHeaderByPathname = (pathname: string, t: TTranslation) => {
 };
 
 export const getIsSettingsPaid = (
-  portals: unknown,
   isCustomizationAvailable: boolean,
+  portals?: TPortals[],
 ) => {
   return portals?.length === 1 ? false : isCustomizationAvailable;
 };
 
-export const getIsCustomizationAvailable = (quota: unknown) => {
-  return quota.features.find((obj) => obj.id === "customization")?.value;
+export const getIsCustomizationAvailable = (quota?: TPaymentQuota) => {
+  return quota?.features.find((obj) => obj.id === "customization")
+    ?.value as boolean;
 };
 
-export const getIsDefaultWhiteLabel = (whiteLabelIsDefault: unknown) => {
+export const getIsDefaultWhiteLabel = (
+  whiteLabelIsDefault: TDefaultWhiteLabel,
+) => {
   return whiteLabelIsDefault.map((item) => item?.default).includes(false);
 };
 
-export const isValidDate = (date: Date) => {
-  return moment(date).tz(window.timezone)?.year() !== 9999;
+export const isValidDate = (date: string | Date, timezone: string) => {
+  return moment(date).tz(timezone)?.year() !== 9999;
 };
 
-export const getIsLicenseDateExpired = (dueDate: string | Date) => {
-  if (!isValidDate(dueDate)) return true;
-  return moment() > moment(dueDate).tz(window.timezone);
+export const getIsLicenseDateExpired = (
+  dueDate: string | Date,
+  timezone: string,
+) => {
+  if (!isValidDate(dueDate, timezone)) return true;
+  return moment() > moment(dueDate).tz(timezone);
 };
 
-export const getPaymentDate = (dueDate: string | Date) => {
-  return moment(dueDate).tz(window.timezone)?.format("LL");
+export const getPaymentDate = (dueDate: string | Date, timezone: string) => {
+  return moment(dueDate).tz(timezone)?.format("LL");
 };
 
 export const getDaysLeft = (dueDate: string | Date) => {

@@ -33,6 +33,7 @@ import { toastr } from "@docspace/shared/components/toast";
 
 import { BrandName } from "@docspace/shared/pages/Branding/BrandName";
 import { IWhiteLabelData } from "@docspace/shared/pages/Branding/WhiteLabel/WhiteLabel.types";
+import type { TPaymentQuota } from "@docspace/shared/api/portal/types";
 
 import { setBrandName } from "@docspace/shared/api/settings";
 import { useResponsiveNavigation } from "@docspace/shared/hooks/useResponsiveSSRNavigation";
@@ -49,7 +50,7 @@ export const BrandNamePage = ({
   isSettingPaid: boolean;
   standalone: boolean;
   brandName: string;
-  quota: unknown;
+  quota?: TPaymentQuota;
 }) => {
   const { t } = useTranslation("Common");
   const router = useRouter();
@@ -62,7 +63,6 @@ export const BrandNamePage = ({
     redirectUrl: "/settings/branding",
     currentLocation: "brand-name",
     deviceType: currentDeviceType,
-    router: router,
     pathname: pathname,
   });
 

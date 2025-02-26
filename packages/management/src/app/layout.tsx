@@ -27,8 +27,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@docspace/shared/utils/next-ssr-helper";
-import { TenantStatus, ThemeKeys } from "@docspace/shared/enums";
-import { SYSTEM_THEME_KEY } from "@docspace/shared/constants";
+import { ThemeKeys, TenantStatus } from "@docspace/shared/enums";
+import { SYSTEM_THEME_KEY, LANGUAGE } from "@docspace/shared/constants";
 
 import { Toast } from "@docspace/shared/components/toast";
 
@@ -47,7 +47,7 @@ import { Scripts } from "@/components/Scripts";
 import { ManagementDialogs } from "@/dialogs";
 
 import "@/styles/globals.scss";
-import "../../../shared/styles/theme.scss";
+import "@docspace/shared/styles/theme.scss";
 
 export default async function RootLayout({
   children,
@@ -78,9 +78,12 @@ export default async function RootLayout({
 
   const cookieStore = cookies();
 
-  const systemTheme = cookieStore.get(SYSTEM_THEME_KEY)?.value as
-    | ThemeKeys
-    | undefined;
+  const systemTheme = cookieStore.get(SYSTEM_THEME_KEY);
+  const cookieLng = cookieStore.get(LANGUAGE);
+
+  if (cookieLng && settings && typeof settings !== "string") {
+    settings.culture = cookieLng.value;
+  }
 
   const { openSource } = portalTariff;
 
@@ -102,13 +105,20 @@ export default async function RootLayout({
         <meta name="google" content="notranslate" />
       </head>
       <body
-        className={`${systemTheme === ThemeKeys.DarkStr ? "dark" : "light"}`}
+        className={`${systemTheme?.value === ThemeKeys.DarkStr ? "dark" : "light"}`}
       >
         <StyledComponentsRegistry>
-          <Providers contextData={{ user, settings, systemTheme, colorTheme }}>
+          <Providers
+            contextData={{
+              user,
+              settings,
+              systemTheme: systemTheme?.value as ThemeKeys,
+              colorTheme,
+            }}
+          >
             <Toast isSSR />
-            <ManagementDialogs settings={settings} user={user} />
-            <LayoutWrapper portals={portals} isCommunity={openSource}>
+            <ManagementDialogs settings={settings!} user={user!} />
+            <LayoutWrapper portals={portals!} isCommunity={openSource}>
               {children}
             </LayoutWrapper>
           </Providers>

@@ -44,6 +44,8 @@ import {
   ILogo,
   IWhiteLabelData,
 } from "@docspace/shared/pages/Branding/WhiteLabel/WhiteLabel.types";
+import type { TPaymentQuota } from "@docspace/shared/api/portal/types";
+import type { TPortals } from "@docspace/shared/api/management/types";
 
 import useDeviceType from "@/hooks/useDeviceType";
 import {
@@ -51,6 +53,8 @@ import {
   getIsCustomizationAvailable,
   getIsDefaultWhiteLabel,
 } from "@/lib";
+
+import type { TDefaultWhiteLabel } from "@/types";
 
 export const WhiteLabelPage = ({
   whiteLabelLogos,
@@ -66,8 +70,8 @@ export const WhiteLabelPage = ({
   showAbout: boolean;
   isDefaultWhiteLabel: boolean;
   standalone: boolean;
-  portals: unknown;
-  quota: unknown;
+  portals?: TPortals[];
+  quota?: TPaymentQuota;
 }) => {
   const { t } = useTranslation("Common");
   const { currentDeviceType } = useDeviceType();
@@ -83,13 +87,12 @@ export const WhiteLabelPage = ({
   const [isSaving, startTransition] = useTransition();
 
   const isCustomizationAvailable = getIsCustomizationAvailable(quota);
-  const isSettingPaid = getIsSettingsPaid(portals, isCustomizationAvailable);
+  const isSettingPaid = getIsSettingsPaid(isCustomizationAvailable, portals);
 
   useResponsiveNavigation({
     redirectUrl: "/settings/branding",
     currentLocation: "white-label",
     deviceType: currentDeviceType,
-    router: router,
     pathname: pathname,
   });
 
@@ -98,7 +101,9 @@ export const WhiteLabelPage = ({
       try {
         await setWhiteLabelLogos(data, true);
         const logos = await getLogoUrls(null, true);
-        const isDefault = await getIsDefaultWhiteLabelLogos(true);
+        const isDefault = (await getIsDefaultWhiteLabelLogos(
+          true,
+        )) as TDefaultWhiteLabel;
 
         setLogoUrls(logos);
         setDefaultLogoUrls(cloneDeep(logos));
@@ -114,7 +119,9 @@ export const WhiteLabelPage = ({
     try {
       await restoreWhiteLabelLogos(true);
       const logos = await getLogoUrls(null, true);
-      const isDefault = await getIsDefaultWhiteLabelLogos(true);
+      const isDefault = (await getIsDefaultWhiteLabelLogos(
+        true,
+      )) as TDefaultWhiteLabel;
 
       setLogoUrls(logos);
       setDefaultLogoUrls(cloneDeep(logos));
@@ -137,7 +144,7 @@ export const WhiteLabelPage = ({
       isSaving={isSaving}
       enableRestoreButton={isDefault}
       setLogoUrls={setLogoUrls}
-      isWhiteLabelLoaded={true}
+      isWhiteLabelLoaded
       defaultWhiteLabelLogoUrls={defaultLogoUrls}
     />
   );

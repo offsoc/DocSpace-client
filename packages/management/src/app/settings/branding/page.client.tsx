@@ -35,6 +35,8 @@ import type { ILogo } from "@docspace/shared/pages/Branding/WhiteLabel/WhiteLabe
 import type { ICompanySettings } from "@docspace/shared/pages/Branding/CompanyInfo/CompanyInfo.types";
 import type { IBuildInfo } from "@docspace/shared/components/about-dialog/About.types";
 import type { TAdditionalResources } from "@docspace/shared/api/settings/types";
+import type { TPaymentQuota } from "@docspace/shared/api/portal/types";
+import type { TPortals } from "@docspace/shared/api/management/types";
 
 import { getIsCustomizationAvailable, getIsSettingsPaid } from "@/lib";
 import useDeviceType from "@/hooks/useDeviceType";
@@ -68,8 +70,8 @@ const BrandingPage = ({
   showAbout: boolean;
   isDefaultWhiteLabel: boolean;
   standalone: boolean;
-  portals: unknown;
-  quota: unknown;
+  portals?: TPortals[];
+  quota?: TPaymentQuota;
   additionalResources: TAdditionalResources;
   companyInfo: ICompanySettings;
   buildInfo: IBuildInfo;
@@ -82,7 +84,7 @@ const BrandingPage = ({
   const isMobileView = currentDeviceType === DeviceType.mobile;
 
   const isCustomizationAvailable = getIsCustomizationAvailable(quota);
-  const isSettingPaid = getIsSettingsPaid(portals, isCustomizationAvailable);
+  const isSettingPaid = getIsSettingsPaid(isCustomizationAvailable, portals);
 
   const onClickLink = (e: MouseEvent<Element>) => {
     const target = e.target as HTMLAnchorElement;

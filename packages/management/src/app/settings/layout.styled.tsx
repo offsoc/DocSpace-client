@@ -24,11 +24,26 @@
 // content are licensed under the terms of the Creative Commons Attribution-ShareAlike 4.0
 // International. See the License terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 
-import { redirect } from "next/navigation";
+import styled, { css } from "styled-components";
+import { mobile } from "@docspace/shared/utils";
 
-const Settings = () => {
-  return redirect("/settings/branding");
-};
+export const StyledWrapper = styled.div<{ hideTabs?: boolean }>`
+  .content {
+    display: none;
+  }
 
-export default Settings;
+  @media ${mobile} {
+    ${({ hideTabs }) =>
+      hideTabs &&
+      css`
+        .tabs {
+          display: none;
+        }
+
+        .content {
+          display: flex;
+        }
+      `}
+  }
+`;
 

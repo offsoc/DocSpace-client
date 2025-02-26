@@ -26,6 +26,7 @@
 
 import ArrowIcon from "PUBLIC_DIR/images/arrow.react.svg?url";
 
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ReactSVG } from "react-svg";
 import { useTheme } from "styled-components";
@@ -34,13 +35,22 @@ import { Text } from "@docspace/shared/components/text";
 import { getConvertedSize } from "@docspace/shared/utils/common";
 import { DeviceType } from "@docspace/shared/enums";
 
+import type { TPortals } from "@docspace/shared/api/management/types";
+
 import useDeviceType from "@/hooks/useDeviceType";
 import { StyledRowContent } from "./multiple.styled";
 
-export const RowContent = ({ item, tenantAlias }) => {
+export const RowContent = ({
+  item,
+  tenantAlias,
+}: {
+  item: TPortals;
+  tenantAlias: string;
+}) => {
   const { t } = useTranslation(["Management", "Common", "Settings"]);
   const { currentDeviceType } = useDeviceType();
   const theme = useTheme();
+  const [protocol, setProtocol] = useState("");
 
   const { roomAdminCount, usersCount, roomsCount, usedSize } =
     item?.quotaUsage || {
@@ -58,7 +68,6 @@ export const RowContent = ({ item, tenantAlias }) => {
     customQuota >= 0 ? `${usedStorage}/${maxStorage}` : `${usedStorage}`;
 
   const isCurrentPortal = tenantAlias === item.portalName;
-  const protocol = window?.location?.protocol;
   const isWizardCompleted = item.wizardSettings.completed;
 
   const onSpaceClick = () => {
@@ -66,6 +75,10 @@ export const RowContent = ({ item, tenantAlias }) => {
       window.open(`${protocol}//${item.domain}/`, "_blank");
     }
   };
+
+  useEffect(() => {
+    setProtocol(window?.location?.protocol);
+  }, []);
 
   return (
     <StyledRowContent
@@ -129,3 +142,4 @@ export const RowContent = ({ item, tenantAlias }) => {
     </StyledRowContent>
   );
 };
+

@@ -36,22 +36,15 @@ const version = pkg.version;
 const nextConfig = {
   basePath: "/management",
   output: "standalone",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   compiler: {
     styledComponents: true,
   },
   generateBuildId: async () => {
     // This could be anything, using the latest git hash
     return `${pkg.name}-${pkg.version}-${new Date().getTime()}`;
-  },
-  images: {
-    unoptimized: true,
-  },
-  typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
   },
   logging: {
     fetches: {
