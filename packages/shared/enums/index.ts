@@ -672,3 +672,9 @@ export enum EncryptionStatus {
   Encrypted = 2,
   DecryptionStarted = 3,
 }
+
+export enum DeepLinkType {
+  Choice = 0,
+  Web = 1,
+  App = 2,
+}

@@ -42,10 +42,14 @@ export const Bonus = ({
   isTrial,
   isDeveloper,
   isCommunity,
-  helpUrl,
   salesEmail,
   dataBackupUrl,
   logoText,
+  enterpriseInstallScriptUrl,
+  enterpriseInstallWindowsUrl,
+  forEnterprisesUrl,
+  demoOrderUrl,
+  feedbackAndSupportUrl,
 }: IBonusProps) => {
   const { t, ready } = useTranslation("Common");
 
@@ -66,12 +70,18 @@ export const Bonus = ({
       </Text>
       <Text>{t("UpgradeToProBannerInstructionDescr")}</Text>
 
-      <OfficialDocumentation dataBackupUrl={dataBackupUrl} />
+      <OfficialDocumentation
+        dataBackupUrl={dataBackupUrl}
+        enterpriseInstallScriptUrl={enterpriseInstallScriptUrl}
+        enterpriseInstallWindowsUrl={enterpriseInstallWindowsUrl}
+      />
 
       <ContactContainer
-        helpUrl={helpUrl}
         salesEmail={salesEmail}
         isCommunity={isCommunity}
+        forEnterprisesUrl={forEnterprisesUrl}
+        demoOrderUrl={demoOrderUrl}
+        feedbackAndSupportUrl={feedbackAndSupportUrl}
       />
     </StyledBonus>
   );

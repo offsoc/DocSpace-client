@@ -43,11 +43,10 @@ const defaultProps = {
   isSettingPaid: true,
   standalone: false,
   onSave,
-  isWhiteLabelLoaded: true,
+  isBrandNameLoaded: true,
   defaultBrandName: "Default Brand",
   brandName: "Current Brand",
   isEqualText: false,
-  isBrandNameLoaded: true,
 };
 
 const renderComponent = (props = {}) => {

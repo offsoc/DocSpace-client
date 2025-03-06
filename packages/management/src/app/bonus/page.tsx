@@ -48,13 +48,21 @@ async function Page() {
   if (!settings || !quota || !portalTariff || !paymentSettings)
     redirect(`${getBaseUrl()}/login`);
 
-  const { helpLink, logoText } = settings;
+  const { logoText, externalResources } = settings;
+  const { site, helpcenter, support } = externalResources;
+  const forEnterprisesUrl = site.domain + site.entries.forenterprises;
+  const enterpriseInstallScriptUrl =
+    helpcenter.domain + helpcenter.entries.enterpriseinstallscript;
+  const enterpriseInstallWindowsUrl =
+    helpcenter.domain + helpcenter.entries.enterpriseinstallwindows;
+  const feedbackAndSupportUrl = support.domain;
+  const demoOrderUrl = site.domain + site.entries.demoorder;
+
   const { trial } = quota;
   const { enterprise, developer, openSource } = portalTariff;
   const { salesEmail } = paymentSettings;
 
-  const helpUrl = "https://helpdesk.onlyoffice.com";
-  const dataBackupUrl = `${helpLink}/administration/docspace-settings.aspx#CreatingBackup_block`;
+  const dataBackupUrl = `${helpcenter.domain}/administration/docspace-settings.aspx#CreatingBackup_block`;
 
   if (!openSource) return redirect(`${getBaseUrl()}/error/403`);
 
@@ -64,10 +72,14 @@ async function Page() {
       isTrial={trial}
       isDeveloper={developer}
       isCommunity={openSource}
-      helpUrl={helpUrl}
+      feedbackAndSupportUrl={feedbackAndSupportUrl}
       salesEmail={salesEmail}
       dataBackupUrl={dataBackupUrl}
       logoText={logoText}
+      enterpriseInstallScriptUrl={enterpriseInstallScriptUrl}
+      enterpriseInstallWindowsUrl={enterpriseInstallWindowsUrl}
+      forEnterprisesUrl={forEnterprisesUrl}
+      demoOrderUrl={demoOrderUrl}
     />
   );
 }
