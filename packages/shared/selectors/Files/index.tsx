@@ -29,7 +29,12 @@
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 
-import { createFolder, deleteFolder } from "../../api/files";
+import {
+  createFile,
+  createFolder,
+  deleteFile,
+  deleteFolder,
+} from "../../api/files";
 
 import { FolderType, RoomsType, DeviceType } from "../../enums";
 
@@ -342,13 +347,11 @@ const FilesSelectorComponent = (props: FilesSelectorProps) => {
           setSelectedItemType("files");
         }
 
-        if (checkCreating && breadCrumbs.length === 1 && item.id) {
+        if (checkCreating && item.id) {
+          console.log("item.id", item.id, item);
           try {
-            const folderInfo = await createFolder(
-              item.id,
-              t("Common:NewFolder"),
-            );
-            await deleteFolder(folderInfo.id, true, true);
+            const fileInfo = await createFile(item.id, t("Common:NewDocument"));
+            await deleteFile(fileInfo.id, true, true);
             setIsDisabledFolder(false);
           } catch (e) {
             console.log(e);
