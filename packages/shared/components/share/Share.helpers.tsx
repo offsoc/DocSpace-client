@@ -34,6 +34,7 @@ import AccessReviewReactSvgUrl from "PUBLIC_DIR/images/access.review.react.svg?u
 import CustomFilterReactSvgUrl from "PUBLIC_DIR/images/custom.filter.react.svg?url";
 import AccessCommentReactSvgUrl from "PUBLIC_DIR/images/access.comment.react.svg?url";
 import EyeReactSvgUrl from "PUBLIC_DIR/images/eye.react.svg?url";
+import FillFormsReactSvgUrl from "PUBLIC_DIR/images/access.edit.form.react.svg?url";
 // import EyeOffReactSvgUrl from "PUBLIC_DIR/images/eye.off.react.svg?url";
 // import RemoveReactSvgUrl from "PUBLIC_DIR/images/remove.react.svg?url";
 
@@ -118,6 +119,12 @@ export const getAccessOptions = (
       key: "viewing",
       label: t("Common:ReadOnly"),
       icon: EyeReactSvgUrl,
+    },
+    available.FillForms && {
+      access: ShareAccessRights.FormFilling,
+      key: "filling",
+      label: "Filling",
+      icon: FillFormsReactSvgUrl,
     },
     // available.Restrict && {
     //   access: ShareAccessRights.DenyAccess,
@@ -457,4 +464,14 @@ export const getExpirationDate = (
 
 export const getCreateShareLinkKey = (userId: string, fileType?: FileType) => {
   return `link-create-document-${fileType ?? ""}-${userId}`;
+};
+
+export const evenPrimaryLink = (fileLinks: TFileLink[]) => {
+  return fileLinks.map((link) => link?.sharedTo?.primary).includes(true);
+};
+
+export const DEFAULT_CREATE_LINK_SETTINGS = {
+  access: ShareAccessRights.ReadOnly,
+  internal: false,
+  diffExpirationDate: null,
 };

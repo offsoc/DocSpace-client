@@ -37,6 +37,8 @@ import Refresh12ReactSvgUrl from "PUBLIC_DIR/images/icons/12/refresh.react.svg?u
 import Mute12ReactSvgUrl from "PUBLIC_DIR/images/icons/12/mute.react.svg?url";
 import Mute16ReactSvgUrl from "PUBLIC_DIR/images/icons/16/mute.react.svg?url";
 import CreateRoomReactSvgUrl from "PUBLIC_DIR/images/create.room.react.svg?url";
+import CustomFilter12ReactSvgUrl from "PUBLIC_DIR/images/icons/12/custom-filter.react.svg?url";
+import CustomFilter16ReactSvgUrl from "PUBLIC_DIR/images/icons/16/custom-filter.react.svg?url";
 
 import { isMobile as isMobileDevice } from "react-device-detect";
 
@@ -47,6 +49,9 @@ import {
   getFillingStatusTitle,
 } from "@docspace/shared/utils";
 
+import { Tooltip } from "../tooltip";
+import { Text } from "../text";
+import { Link, LinkTarget, LinkType } from "../link";
 import { Badge } from "../badge";
 import { ColorTheme, ThemeId } from "../color-theme";
 
@@ -112,6 +117,8 @@ const Badges = ({
   onCreateRoom,
   newFilesBadge,
   className,
+  isExtsCustomFilter,
+  customFilterExternalLink,
 }: BadgesProps) => {
   const {
     id,
@@ -131,6 +138,8 @@ const Badges = ({
 
   const isTile = viewAs === "tile";
 
+  const customFilterEnabled = item.customFilterEnabled;
+
   const countVersions =
     versionGroup && versionGroup > 999 ? "999+" : versionGroup;
 
@@ -143,8 +152,6 @@ const Badges = ({
   const sizeBadge =
     isTile || tabletViewBadge ? IconSizeType.medium : IconSizeType.small;
 
-  const lineHeightBadge = isTile || tabletViewBadge ? "1.46" : "1.34";
-
   const paddingBadge = isTile || tabletViewBadge ? "0 5px" : "0 5px";
 
   const fontSizeBadge = isTile || tabletViewBadge ? "11px" : "9px";
@@ -156,6 +163,10 @@ const Badges = ({
   const iconPin = UnpinReactSvgUrl;
   const iconMute =
     sizeBadge === "medium" ? Mute16ReactSvgUrl : Mute12ReactSvgUrl;
+  const iconCustomFilter =
+    sizeBadge === "medium"
+      ? CustomFilter16ReactSvgUrl
+      : CustomFilter12ReactSvgUrl;
 
   const unpinIconProps = {
     "data-id": id,
@@ -168,7 +179,6 @@ const Badges = ({
     fontWeight: 800,
     maxWidth: "50px",
     padding: paddingBadge,
-    lineHeight: lineHeightBadge,
     "data-id": id,
     isMutedBadge,
   };
@@ -179,7 +189,6 @@ const Badges = ({
     fontSize: "9px",
     fontWeight: 800,
     maxWidth: "60px",
-    lineHeight: "12px",
     "data-id": id,
   };
   const unmuteIconProps = {
@@ -220,6 +229,27 @@ const Badges = ({
     [item.formFillingStatus, t],
   );
 
+  const getTooltipContent = () => (
+    <>
+      <Text fontSize="12px" fontWeight={400} noSelect>
+        {t("CustomFilterEnableDiscription")}
+      </Text>
+      {customFilterExternalLink ? (
+        <Link
+          type={LinkType.action}
+          target={LinkTarget.blank}
+          className="custom-filter-tooltip-link"
+          fontSize="13px"
+          fontWeight={600}
+          href={customFilterExternalLink}
+          isHovered
+        >
+          {t("Common:LearnMore")}
+        </Link>
+      ) : null}
+    </>
+  );
+
   const wrapperCommonClasses = classNames(styles.badges, className, "badges", {
     [styles.tableView]: viewAs === "table",
     [styles.rowView]: viewAs === "row",
@@ -256,9 +286,7 @@ const Badges = ({
             label={fillingStatusLabel}
             title={fillingStatusTitle}
             {...versionBadgeProps}
-            style={{
-              width: "max-content",
-            }}
+            maxWidth="max-content"
           />
         </BadgeWrapper>
       ) : null}
@@ -324,13 +352,13 @@ const Badges = ({
               "badge-version badge-version-current tablet-badge icons-group",
             )}
             backgroundColor={theme.filesBadges.badgeBackgroundColor}
-            label={t("VersionBadge", {
+            label={t("Common:VersionBadge", {
               version: countVersions as string,
             })}
             {...onShowVersionHistoryProp}
             noHover
             isVersionBadge
-            title={t("ShowVersionHistory")}
+            title={t("Common:ShowVersionHistory")}
           />
         </BadgeWrapper>
       ) : null}
@@ -339,7 +367,7 @@ const Badges = ({
           <Badge
             {...commonBadgeProps}
             className="badge-version badge-new-version tablet-badge icons-group"
-            label={t("Files:New")}
+            label={t("Common:New")}
             onClick={onBadgeClick}
           />
         </BadgeWrapper>
@@ -350,10 +378,33 @@ const Badges = ({
             place="bottom"
             size={isViewTable ? 12 : 16}
             className="bagde_alert icons-group"
-            tooltipContent={t("BadgeAlertDescription")}
+            tooltipContent={t("Common:BadgeAlertDescription")}
           />
         </BadgeWrapper>
       )} */}
+
+      {customFilterEnabled && !isRoom && isExtsCustomFilter ? (
+        <>
+          <ColorTheme
+            id="customFilterTooltip"
+            themeId={ThemeId.IconButtonCustomFilter}
+            iconName={iconCustomFilter}
+            size={sizeBadge}
+            data-tooltip-id="customFilterTooltip"
+            className="badge is-custom-filter tablet-badge"
+          />
+
+          <Tooltip
+            id="customFilterTooltip"
+            place="bottom-start"
+            getContent={getTooltipContent}
+            clickable
+            maxWidth="238px"
+            className={styles.customFilterTooltip}
+            noUserSelect
+          />
+        </>
+      ) : null}
     </div>
   ) : (
     <div
@@ -371,7 +422,7 @@ const Badges = ({
             "badge row-copy-link icons-group tablet-badge",
           )}
           onClick={onCopyPrimaryLink}
-          title={t("Files:CopySharedLink")}
+          title={t("Common:CopySharedLink")}
         />
       ) : null}
 
@@ -384,7 +435,7 @@ const Badges = ({
             "badge tablet-row-copy-link icons-group tablet-badge",
           )}
           onClick={onCopyPrimaryLink}
-          title={t("Files:CopySharedLink")}
+          title={t("Common:CopySharedLink")}
         />
       ) : null}
 
@@ -422,10 +473,13 @@ const Badges = ({
           )}
           size={IconSizeType.medium}
           onClick={onCreateRoom}
-          title={t("Files:CreateRoom")}
+          title={t("Common:CreateRoom")}
         />
       ) : null}
-      {showNew && isTile && isRoom ? newFilesBadge : null}
+      {showNew && !isTile && isRoom ? newFilesBadge : null}
+      {showNew && isTile && isRoom ? (
+        <div className={styles.badgeWrapperNewBadge}>{newFilesBadge}</div>
+      ) : null}
     </div>
   );
 };

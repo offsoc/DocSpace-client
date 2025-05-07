@@ -101,6 +101,8 @@ const DropDownItem = ({
   isModern,
   style,
   isPaidBadge,
+  heightTablet,
+  badgeLabel,
   ...rest
 }: DropDownItemProps) => {
   const { t } = useTranslation(["Common"]);
@@ -142,7 +144,7 @@ const DropDownItem = ({
           [styles.activeDescendant]: isActiveDescendant && !disabled,
           [styles.textOverflow]: textOverflow,
           [styles.modern]: isModern,
-          [styles.disabled]: disabled,
+          [styles.disabled]: disabled && !isSelected,
         },
         className,
       )}
@@ -231,7 +233,7 @@ const DropDownItem = ({
                 ? globalColors.favoritesStatus
                 : globalColors.favoriteStatusDark
             }
-            label={t("Common:Paid")}
+            label={badgeLabel || t("Common:Paid")}
             isPaidBadge
           />
         </div>

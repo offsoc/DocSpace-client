@@ -33,9 +33,9 @@ import {
 import { ContextMenuModel } from "../../context-menu";
 
 import {
-  BreadCrumbsProps,
   TBreadCrumb,
   TDisplayedItem,
+  BreadCrumbsProps,
 } from "../Selector.types";
 import {
   StyledBreadCrumbs,
@@ -227,8 +227,8 @@ const BreadCrumbs = ({ visible = true }: BreadCrumbsProps) => {
             lineHeight="22px"
             noSelect
             truncate
-            isCurrent={index === displayedItems.length - 1}
-            isLoading={isBreadCrumbsLoading}
+            $isCurrent={index === displayedItems.length - 1}
+            $isLoading={isBreadCrumbsLoading}
             onClick={() => {
               if (index === displayedItems.length - 1 || isBreadCrumbsLoading)
                 return;

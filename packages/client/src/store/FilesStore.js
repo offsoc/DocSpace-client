@@ -51,6 +51,7 @@ import {
   RoomsTypes,
   isDesktop,
   isMobile,
+  isSystemFolder,
 } from "@docspace/shared/utils";
 import { getViewForCurrentRoom } from "@docspace/shared/utils/getViewForCurrentRoom";
 
@@ -644,6 +645,7 @@ class FilesStore {
           }
 
           const navigationPath = [...this.selectedFolderStore.navigationPath];
+          const pathParts = [...this.selectedFolderStore.pathParts];
 
           const idx = navigationPath.findIndex((p) => p.id === f.id);
 
@@ -655,6 +657,7 @@ class FilesStore {
             this.selectedFolderStore.setSelectedFolder({
               ...f,
               navigationPath,
+              pathParts,
             });
           }
 
@@ -722,18 +725,18 @@ class FilesStore {
         }
       });
     } else if (opt?.type === "folder" && opt?.id) {
+      const { isRoom, isTemplate, pathParts, rootFolderType } =
+        this.selectedFolderStore;
       const foundIndex = this.folders.findIndex((x) => x.id === opt?.id);
-      if (foundIndex == -1) {
-        const removedId = opt.id;
-        const pathParts = this.selectedFolderStore.pathParts;
 
-        const includePathPart = pathParts.some(({ id }) => id === removedId);
-
-        if (includePathPart && !this.treeFoldersStore.isPersonalReadOnly) {
-          window.DocSpace.navigate("/");
-        }
-
-        return;
+      if (foundIndex === -1) {
+        return this.redirectToParent(
+          opt,
+          pathParts,
+          isRoom,
+          isTemplate,
+          rootFolderType,
+        );
       }
 
       const foundFolder = this.folders[foundIndex];
@@ -789,6 +792,79 @@ class FilesStore {
     });
 
     window?.dispatchEvent(event);
+  };
+
+  redirectToParent = (opt, pathParts, isRoom, isTemplate, rootFolderType) => {
+    const removedId = opt.id;
+
+    const includePathPartIndex = pathParts.findIndex(
+      ({ id }) => id === removedId,
+    );
+
+    if (includePathPartIndex === -1 || this.treeFoldersStore.isPersonalReadOnly)
+      return;
+
+    if (isRoom && isTemplate) {
+      const newRoomsFilter = RoomsFilter.getDefault();
+      newRoomsFilter.searchArea = RoomSearchArea.Templates;
+      return window.DocSpace.navigate(
+        `/rooms/shared/filter?${newRoomsFilter.toUrlParams()}`,
+      );
+    }
+    const pathPart = pathParts[includePathPartIndex - 1];
+    const { myFolderId, roomsFolderId } = this.treeFoldersStore;
+    const userId = this.userStore.user && this.userStore.user.id;
+
+    switch (rootFolderType) {
+      case FolderType.Archive: {
+        const archiveFilter = RoomsFilter.getDefault(
+          userId,
+          RoomSearchArea.Archive,
+        );
+        archiveFilter.searchArea = RoomSearchArea.Archive;
+        const params = archiveFilter.toUrlParams(userId, true);
+        const path = getCategoryUrl(CategoryType.Archive);
+
+        return window.DocSpace.navigate(`${path}?${params}`);
+      }
+      default: {
+        if (!pathPart) {
+          return;
+        }
+
+        if (pathPart.id === roomsFolderId) {
+          return window.DocSpace.navigate("/");
+        }
+
+        const filter = FilesFilter.getDefault();
+
+        filter.folder = pathPart.id;
+
+        const filterStorageItem =
+          userId && localStorage.getItem(`UserFilter=${userId}`);
+
+        if (filterStorageItem && myFolderId === pathPart.id) {
+          const splitFilter = filterStorageItem.split(",");
+
+          filter.sortBy = splitFilter[0];
+          filter.sortOrder = splitFilter[1];
+        }
+        const isPublic = this.publicRoomStore.isPublicRoom;
+        if (isPublic) {
+          filter.key = this.publicRoomStore.publicRoomKey;
+        }
+
+        const params = filter.toUrlParams();
+
+        const categoryType = isPublic
+          ? CategoryType.PublicRoom
+          : getCategoryTypeByFolderType(rootFolderType, pathPart.id);
+
+        const path = getCategoryUrl(categoryType, pathPart.id);
+
+        return window.DocSpace.navigate(`${path}?${params}`);
+      }
+    }
   };
 
   setIsErrorRoomNotAvailable = (state) => {
@@ -1020,6 +1096,7 @@ class FilesStore {
       getEncryptionKeys,
       // setModuleInfo,
       isDesktopClient,
+      getInvitationSettings,
     } = this.settingsStore;
 
     // setModuleInfo(config.homepage, config.id);
@@ -1035,6 +1112,7 @@ class FilesStore {
     if (!this.isEditor) {
       requests.push(
         getPortalCultures(),
+        getInvitationSettings(),
         this.treeFoldersStore.fetchTreeFolders().then((treeFolders) => {
           if (!treeFolders || !treeFolders.length) return;
 
@@ -1698,6 +1776,10 @@ class FilesStore {
             const isTemplatesFolder =
               data.current.rootFolderType === FolderType.RoomTemplates;
 
+            const isRootTemplates =
+              idx === 0 &&
+              data.current.rootFolderType === FolderType.RoomTemplates;
+
             return {
               id: folder.id,
               title,
@@ -1709,6 +1791,7 @@ class FilesStore {
               external,
               quotaLimit,
               usedSpace,
+              isRootTemplates,
             };
           }),
         ).then((res) => {
@@ -1878,7 +1961,6 @@ class FilesStore {
     clearFilter = true,
     withSubfolders = false, // eslint-disable-line  @typescript-eslint/no-unused-vars
     clearSelection = true,
-    withFilterLocalStorage = false, // eslint-disable-line  @typescript-eslint/no-unused-vars
   ) => {
     const { setSelectedNode } = this.treeFoldersStore;
 
@@ -1938,7 +2020,6 @@ class FilesStore {
                 undefined,
                 undefined,
                 undefined,
-                true,
               );
             }
           }
@@ -2052,7 +2133,15 @@ class FilesStore {
   ) => {
     const rooms = await api.rooms.setCustomRoomQuota(itemsIDs, +quotaSize);
 
-    if (!inRoom) await this.fetchRooms(null, filter, false, false, false);
+    if (!inRoom) {
+      if (!filter && this.roomsFilter.searchArea === RoomSearchArea.Templates) {
+        const newFilter = RoomsFilter.getDefault(this.userStore.user?.id);
+        newFilter.searchArea = RoomSearchArea.Templates;
+        await this.fetchRooms(null, newFilter, false, false, false);
+      } else {
+        await this.fetchRooms(null, filter, false, false, false);
+      }
+    }
 
     return rooms;
   };
@@ -2060,7 +2149,15 @@ class FilesStore {
   resetRoomQuota = async (itemsIDs, inRoom = false, filter = null) => {
     const rooms = await api.rooms.resetRoomQuota(itemsIDs);
 
-    if (!inRoom) await this.fetchRooms(null, filter, false, false, false);
+    if (!inRoom) {
+      if (!filter && this.roomsFilter.searchArea === RoomSearchArea.Templates) {
+        const newFilter = RoomsFilter.getDefault(this.userStore.user?.id);
+        newFilter.searchArea = RoomSearchArea.Templates;
+        await this.fetchRooms(null, newFilter, false, false, false);
+      } else {
+        await this.fetchRooms(null, filter, false, false, false);
+      }
+    }
 
     return rooms;
   };
@@ -2143,6 +2240,7 @@ class FilesStore {
     const canDuplicate = item.security?.Duplicate;
     const canDownload = item.security?.Download || isLockedSharedRoom(item);
     const canEmbed = item.security?.Embed;
+    const canSetUpCustomFilter = item.security?.CustomFilter;
 
     if (isFile) {
       const shouldFillForm = item.viewAccessibility.WebRestrictedEditing;
@@ -2163,6 +2261,10 @@ class FilesStore {
       const isOldForm =
         item.fileExst === ".docxf" || item.fileExst === ".oform"; // TODO: Remove after change security options
       const isPdf = item.fileExst === ".pdf";
+
+      const extsCustomFilter =
+        this.filesSettingsStore?.extsWebCustomFilterEditing || [];
+      const isExtsCustomFilter = extsCustomFilter.includes(item.fileExst);
 
       let fileOptions = [
         // "open",
@@ -2192,6 +2294,7 @@ class FilesStore {
         "version", // category
         //   "finalize-version",
         "show-version-history",
+        "custom-filter",
         "show-info",
         "block-unblock-version", // need split
         "separator1",
@@ -2253,6 +2356,10 @@ class FilesStore {
           "separate-stop-filling",
           "stop-filling",
         ]);
+      }
+
+      if (!canSetUpCustomFilter || !isExtsCustomFilter || isMyFolder) {
+        fileOptions = removeOptions(fileOptions, ["custom-filter"]);
       }
 
       if (!canDownload) {
@@ -2503,17 +2610,22 @@ class FilesStore {
       return fileOptions;
     }
     if (isTemplate) {
-      const templateOptions = [
+      let templateOptions = [
         "select",
         "open",
         "separator0",
         "create-room-from-template",
         "edit-template",
         "access-settings",
+        "link-for-room-members",
         "room-info",
         "separator1",
         "delete",
       ];
+
+      if (optionsToRemove.length) {
+        templateOptions = removeOptions(templateOptions, optionsToRemove);
+      }
 
       return templateOptions;
     }
@@ -2837,12 +2949,7 @@ class FilesStore {
   };
 
   createFile = async (folderId, title, templateId, formId) => {
-    return api.files
-      .createFile(folderId, title, templateId, formId)
-      .then((file) => {
-        return Promise.resolve(file);
-      })
-      .then(() => this.fetchFiles(folderId, this.filter, true, true, false));
+    return api.files.createFile(folderId, title, templateId, formId);
   };
 
   setRoomCreated = (roomCreated) => {
@@ -2907,9 +3014,10 @@ class FilesStore {
   };
 
   removeFiles = (fileIds, folderIds, showToast, destFolderId) => {
-    const { isRoomsFolder, isArchiveFolder } = this.treeFoldersStore;
+    const { isRoomsFolder, isArchiveFolder, isTemplatesFolder } =
+      this.treeFoldersStore;
 
-    const isRooms = isRoomsFolder || isArchiveFolder;
+    const isRooms = isRoomsFolder || isArchiveFolder || isTemplatesFolder;
 
     let deleteCount = 0;
 
@@ -3326,6 +3434,7 @@ class FilesStore {
         passwordProtected,
         watermark,
         formFillingStatus,
+        customFilterEnabled,
       } = item;
 
       const thirdPartyIcon = this.thirdPartyStore.getThirdPartyIcon(
@@ -3490,7 +3599,7 @@ class FilesStore {
         type,
         hasDraft,
         isForm,
-        isPDFForm: item.isForm,
+        isPDFForm: item.isForm || item.isPDFForm,
         requestToken,
         lastOpened,
         quotaLimit,
@@ -3505,6 +3614,7 @@ class FilesStore {
         passwordProtected,
         watermark,
         formFillingStatus,
+        customFilterEnabled,
       };
     });
   };
@@ -3609,6 +3719,7 @@ class FilesStore {
       presentations: [],
       masterForms: [],
       other: [],
+      pdfForms: [],
     };
 
     let selection = this.selection.length
@@ -3630,8 +3741,10 @@ class FilesStore {
           sortedFiles.presentations.push(item);
         } else if (isMasterFormExtension(item.fileExst)) {
           sortedFiles.masterForms.push(item);
-        } else if (isDocument(item.fileExst)) {
+        } else if (!item.isPDFForm && isDocument(item.fileExst)) {
           sortedFiles.documents.push(item);
+        } else if (item.isPDFForm) {
+          sortedFiles.pdfForms.push(item);
         } else {
           sortedFiles.other.push(item);
         }
@@ -3820,14 +3933,14 @@ class FilesStore {
     });
   };
 
-  getFileInfo = async (id) => {
-    const fileInfo = await api.files.getFileInfo(id);
+  getFileInfo = async (id, skipRedirect) => {
+    const fileInfo = await api.files.getFileInfo(id, undefined, skipRedirect);
     this.setFile(fileInfo);
     return fileInfo;
   };
 
-  getFolderInfo = async (id) => {
-    const folderInfo = await api.files.getFolderInfo(id);
+  getFolderInfo = async (id, skipRedirect) => {
+    const folderInfo = await api.files.getFolderInfo(id, skipRedirect);
     this.setFolder(folderInfo);
     return folderInfo;
   };
@@ -3843,10 +3956,18 @@ class FilesStore {
 
     const share = shareKey || this.publicRoomStore.publicRoomKey;
 
+    const folderType = this.selectedFolderStore.type;
+
+    const isFormRoom = this.selectedFolderStore.roomType === RoomsType.FormRoom;
+    const isPublic = this.publicRoomStore.isPublicRoom;
+
+    const canShare =
+      share && (isPublic || !isFormRoom) && !isSystemFolder(folderType);
+
     const searchParams = new URLSearchParams();
 
     searchParams.append("fileId", id);
-    if (share) searchParams.append("share", share);
+    if (canShare) searchParams.append("share", share);
     if (preview) searchParams.append("action", "view");
     if (editForm) searchParams.append("action", "edit");
     if (fillForm) searchParams.append("action", "fill");

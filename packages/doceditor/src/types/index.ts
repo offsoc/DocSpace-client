@@ -70,6 +70,7 @@ export type SdkSearchParams = {
   theme?: string | undefined;
   editorGoBack?: boolean | "event";
   is_file?: boolean;
+  isSDK?: boolean;
 };
 
 export type RootPageProps = {
@@ -149,6 +150,14 @@ export type TEditorConfigCustomization = {
 
 export type TEditorConfigMode = "edit" | "view";
 
+export type TEditorConfigEmbedded = {
+  fullscreenUrl: string;
+  saveUrl: string;
+  toolbarDocked: string;
+  embedUrl?: string;
+  shareUrl?: string;
+};
+
 export type TEditorConfig = {
   callbackUrl: string;
   canCoAuthoring: boolean;
@@ -171,6 +180,7 @@ export type TEditorConfig = {
   canUseHistory: boolean;
   createUrl: string;
   customization: TEditorConfigCustomization;
+  embedded: TEditorConfigEmbedded;
   lang: string;
   mergeFolderUrl?: unknown;
   mode: TEditorConfigMode;
@@ -280,6 +290,7 @@ export type TEventData = {
   emails?: string[];
   c?: string;
   version?: number;
+  link?: string;
 };
 
 export type TEvent = {
@@ -364,6 +375,7 @@ export interface UseSocketHelperProps {
   socketUrl: string;
   user?: TUser;
   shareKey?: string;
+  standalone?: boolean;
 }
 
 export interface UseEventsProps {
@@ -379,6 +391,9 @@ export interface UseEventsProps {
 
   sdkConfig?: TFrameConfig | null;
   organizationName: string;
+  setFillingStatusDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
+  openShareFormDialog?: VoidFunction;
+  onStartFillingVDRPanel?: (roles: TFormRole[]) => void;
 }
 
 export interface UseInitProps {

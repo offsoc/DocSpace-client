@@ -977,11 +977,11 @@ export function getQuotaSettings() {
   });
 }
 
-export function createWebhook(name, uri, secretKey, ssl, triggers) {
+export function createWebhook(name, uri, secretKey, ssl, triggers, targetId) {
   return request({
     method: "post",
     url: `/settings/webhook`,
-    data: { name, uri, secretKey, enabled: true, ssl, triggers },
+    data: { name, uri, secretKey, enabled: true, ssl, triggers, targetId },
   });
 }
 
@@ -992,11 +992,19 @@ export function getAllWebhooks() {
   });
 }
 
-export function updateWebhook(id, name, uri, secretKey, ssl, triggers) {
+export function updateWebhook(
+  id,
+  name,
+  uri,
+  secretKey,
+  ssl,
+  triggers,
+  targetId,
+) {
   return request({
     method: "put",
     url: `/settings/webhook`,
-    data: { id, name, uri, secretKey, enabled: true, ssl, triggers },
+    data: { id, name, uri, secretKey, enabled: true, ssl, triggers, targetId },
   });
 }
 
@@ -1332,4 +1340,26 @@ export function getEncryptionSettings() {
   };
 
   return request(options) as TEncryptionSettings;
+}
+
+export async function getInvitationSettings() {
+  const res = (await request({
+    method: "get",
+    url: "/settings/invitationsettings",
+  })) as TInvitationSettings;
+
+  return res;
+}
+
+export async function setInvitationSettings(data: {
+  allowInvitingGuests: boolean;
+  allowInvitingMembers: boolean;
+}) {
+  const res = (await request({
+    method: "put",
+    url: "/settings/invitationsettings",
+    data,
+  })) as TInvitationSettings;
+
+  return res;
 }

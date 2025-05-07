@@ -111,10 +111,15 @@ export async function getUser(userName = null, headers = null) {
 export async function getUserByEmail(
   userEmail: string,
   confirmKey: Nullable<string> = null,
+  culture?: string,
 ) {
+  const urlEmail = `/people/email?email=${userEmail}`;
+
+  const url = culture ? `${urlEmail}&culture=${culture}` : urlEmail;
+
   const options = {
     method: "get",
-    url: `/people/email?email=${userEmail}`,
+    url,
   };
 
   if (confirmKey) options.headers = { confirm: confirmKey };
@@ -314,6 +319,15 @@ export async function getUserById(userId: string) {
     method: "get",
     url: `/people/${userId}`,
   })) as TUser;
+
+  res.displayName = Encoder.htmlDecode(res.displayName);
+
+  if (res.createdBy?.displayName) {
+    res.createdBy = {
+      ...res.createdBy,
+      displayName: Encoder.htmlDecode(res.createdBy.displayName),
+    };
+  }
 
   return res;
 }

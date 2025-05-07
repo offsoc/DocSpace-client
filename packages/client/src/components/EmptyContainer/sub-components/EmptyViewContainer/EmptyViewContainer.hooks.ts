@@ -26,7 +26,7 @@
 
 import { useTheme } from "styled-components";
 import { useMemo, useCallback } from "react";
-import { useNavigate, LinkProps } from "react-router-dom";
+import { useNavigate, LinkProps } from "react-router";
 
 import {
   Events,
@@ -254,7 +254,7 @@ export const useOptions = (
       const edit = extension === FileExtensions.PDF;
 
       if (isMobile && edit && t) {
-        toastr.info(t("Files:MobileEditPdfNotAvailableInfo"));
+        toastr.info(t("Common:MobileEditPdfNotAvailableInfo"));
         return;
       }
 

@@ -27,7 +27,7 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
 import { withTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 import { DeviceType } from "@docspace/shared/enums";
 import { getCatalogIconUrlByType } from "@docspace/shared/utils/catalogIconHelper";
@@ -300,7 +300,7 @@ const ArticleBodyContent = (props) => {
           linkData={linkData}
           folderId={item.id}
           style={{
-            marginTop: `${item.key.includes(9) ? "16px" : "0"}`,
+            margin: `${item.key.includes(9) ? "16px 0px" : "0"}`,
           }}
           $currentColorScheme={currentColorScheme}
         />,

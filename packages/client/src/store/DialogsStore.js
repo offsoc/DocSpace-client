@@ -29,7 +29,6 @@ import {
   FilesSelectorFilterTypes,
   ShareAccessRights,
   Events,
-  RoomsType,
 } from "@docspace/shared/enums";
 import { makeAutoObservable, runInAction } from "mobx";
 
@@ -212,12 +211,6 @@ class DialogsStore {
     data: null,
   };
 
-  shareCollectSelector = {
-    visible: false,
-    file: null,
-    createDefineRoomType: RoomsType.FormRoom,
-  };
-
   warningQuotaDialogVisible = false;
 
   isNewQuotaItemsByCurrentUser = false;
@@ -284,6 +277,27 @@ class DialogsStore {
 
   operationCancelVisible = false;
 
+  /**
+   * @type {Object}
+   * @property {boolean} visible - The visibility of the remove user confirmation dialog.
+   * @property {() => Promise<void> | null} callback - The callback function to be called when the dialog is confirmed.
+   */
+  removeUserConfirmation = {
+    visible: false,
+    callback: null,
+  };
+
+  isShareFormData = { visible: false, updateAccessLink: null, fileId: null };
+
+  assignRolesDialogData = {
+    /** @type {boolean} */
+    visible: false,
+    /** @type {string} */
+    roomName: "",
+    /** @type {import("@docspace/shared/api/files/types").TFile | null} */
+    file: null,
+  };
+
   constructor(
     authStore,
     treeFoldersStore,
@@ -301,6 +315,18 @@ class DialogsStore {
     this.versionHistoryStore = versionHistoryStore;
     this.infoPanelStore = infoPanelStore;
   }
+
+  /**
+   * @typedef {object} TSetIsShareFormData
+   * @property {boolean} visible
+   * @property {Function =} updateAccessLink
+   * @property {number =} fileId
+   *
+   * @param {TSetIsShareFormData} param0
+   */
+  setIsShareFormData = ({ visible, updateAccessLink, fileId }) => {
+    this.isShareFormData = { visible, updateAccessLink, fileId };
+  };
 
   setNewFilesPanelFolderId = (folderId) => {
     this.newFilesPanelFolderId = folderId;
@@ -708,12 +734,18 @@ class DialogsStore {
     );
   };
 
-  changeInviteItem = async (item) =>
+  changeInviteItem = async (item, addExisting, oldId) =>
     runInAction(() => {
-      const index = this.inviteItems.findIndex((iItem) => iItem.id === item.id);
+      const index = this.inviteItems.findIndex((iItem) => {
+        return iItem.id === (addExisting ? oldId : item.id);
+      });
+
+      const addFields = addExisting
+        ? { access: this.inviteItems[index].access }
+        : this.inviteItems[index];
 
       this.inviteItems[index] = {
-        ...this.inviteItems[index],
+        ...addFields,
         ...item,
         warning: false,
       };
@@ -823,28 +855,15 @@ class DialogsStore {
     this.reorderDialogVisible = visible;
   };
 
-  setFillPDFDialogData = (visible, data) => {
+  /**
+   * @param {boolean } visible
+   * @param {import("@docspace/shared/api/files/types").TFile | null =} data
+   * @returns {void}
+   */
+  setFillPDFDialogData = (visible, data = null) => {
     this.fillPDFDialogData = {
       visible,
       data,
-    };
-  };
-
-  /**
-   * @param {boolean} visible
-   * @param {import("@docspace/shared/api/files/types").TFile} [file = null]
-   * @param {import("@docspace/shared/enums").RoomsType} [createDefineRoomType = RoomsType.FormRoom]
-   * @returns {void}
-   */
-  setShareCollectSelector = (
-    visible,
-    file = null,
-    createDefineRoomType = RoomsType.FormRoom,
-  ) => {
-    this.shareCollectSelector = {
-      visible,
-      file,
-      createDefineRoomType,
     };
   };
 
@@ -892,6 +911,17 @@ class DialogsStore {
     this.roomCoverDialogProps = props;
   };
 
+  clearCoverProps = () => {
+    this.setRoomCoverDialogProps({
+      icon: null,
+      color: null,
+      title: null,
+      withoutIcon: true,
+      withSelection: true,
+      customColor: null,
+    });
+  };
+
   setCover = (color, icon) => {
     if (!color) {
       return (this.cover = null);
@@ -910,7 +940,9 @@ class DialogsStore {
   };
 
   setCoverSelection = (selection) => {
-    this.coverSelection = selection;
+    runInAction(() => {
+      this.coverSelection = selection;
+    });
   };
 
   setRoomLogoCover = async (roomId) => {
@@ -976,6 +1008,26 @@ class DialogsStore {
       visible,
       formId,
     };
+  };
+
+  /**
+   * @param {boolean} visible
+   * @param {()=>Promise<void>=} callback
+   */
+  setRemoveUserConfirmation = (visible, callback = null) => {
+    this.removeUserConfirmation = {
+      visible,
+      callback,
+    };
+  };
+
+  /**
+   * @param {boolean} visible
+   * @param {string} [roomName = ""]
+   * @param {import("@docspace/shared/api/files/types").TFile} [file = null]
+   */
+  setAssignRolesDialogData = (visible, roomName = "", file = null) => {
+    this.assignRolesDialogData = { visible, roomName, file };
   };
 }
 

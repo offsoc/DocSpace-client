@@ -88,6 +88,7 @@ export type TAvailableExternalRights = {
   Read: boolean;
   Restrict: boolean;
   Review: boolean;
+  FillForms: boolean;
 };
 
 export type TFile = {
@@ -120,6 +121,7 @@ export type TFile = {
   viewAccessibility: TFileViewAccessibility;
   viewUrl: string;
   webUrl: string;
+  shortWebUrl: string;
   availableExternalRights?: TAvailableExternalRights;
   providerId?: number;
   providerKey?: string;
@@ -148,6 +150,7 @@ export type TGetReferenceData = {
   instanceId: string;
   sourceFileId?: number;
   path?: string;
+  link?: string;
 };
 
 export type TGetReferenceDataRequest = {
@@ -250,6 +253,8 @@ export type TOperation = {
   id: string;
   processed: string;
   progress: number;
+  url?: string;
+  files?: TFile[];
 };
 
 export type TUploadOperation = {
@@ -485,7 +490,12 @@ export type TConnectingStorages = TConnectingStorage[];
 
 export type TFormRoleMappingRequest = {
   formId: number;
-  roles: { userId: string; roleName: string; roleColor: string }[];
+  roles: {
+    userId: string;
+    roleName: string;
+    roleColor: string;
+    roomId: number;
+  }[];
 };
 
 export type TFileFillingFormStatus = {

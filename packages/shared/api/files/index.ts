@@ -72,6 +72,7 @@ import {
   TFormRoleMappingRequest,
   TFileFillingFormStatus,
 } from "./types";
+import type { TFileConvertId } from "../../dialogs/download-dialog/DownloadDialog.types";
 
 export async function openEdit(
   fileId: number,
@@ -430,7 +431,7 @@ export async function deleteFolder(
 }
 
 export async function createFile(
-  folderId: number,
+  folderId: number | string,
   title: string,
   templateId?: number,
   formId?: number,
@@ -521,7 +522,11 @@ export async function createFile(
 //   return request(options);
 // }
 
-export async function getFileInfo(fileId: number | string, share?: string) {
+export async function getFileInfo(
+  fileId: number | string,
+  share?: string,
+  skipRedirect = false,
+) {
   const options: AxiosRequestConfig = {
     method: "get",
     url: `/files/file/${fileId}`,
@@ -532,7 +537,7 @@ export async function getFileInfo(fileId: number | string, share?: string) {
       : undefined,
   };
 
-  const res = (await request(options)) as TFile;
+  const res = (await request(options, skipRedirect)) as TFile;
 
   return res;
 }
@@ -586,6 +591,16 @@ export async function emptyTrash() {
   const res = (await request({
     method: "put",
     url: "/files/fileops/emptytrash",
+  })) as TOperation[];
+  return res;
+}
+
+export async function enableCustomFilter(fileId: number, enabled: boolean) {
+  const data = { enabled };
+  const res = (await request({
+    method: "put",
+    url: `/files/file/${fileId}/customfilter`,
+    data,
   })) as TOperation[];
   return res;
 }
@@ -703,7 +718,7 @@ export function uploadBackup(url: string, data: unknown) {
 }
 
 export async function downloadFiles(
-  fileIds: number[],
+  fileIds: number[] | TFileConvertId[],
   folderIds: number[],
   shareKey: string,
 ) {
@@ -752,6 +767,7 @@ export async function copyToFolder(
   conflictResolveType: ConflictResolveType,
   deleteAfter: boolean,
   content = false,
+  toFillOut = false,
 ) {
   const data = {
     destFolderId,
@@ -760,6 +776,7 @@ export async function copyToFolder(
     conflictResolveType,
     deleteAfter,
     content,
+    toFillOut,
   };
 
   const res = (await request({
@@ -792,6 +809,7 @@ export async function moveToFolder(
   fileIds: number[],
   conflictResolveType: ConflictResolveType,
   deleteAfter: boolean,
+  toFillOut = false,
 ) {
   const data = {
     destFolderId,
@@ -799,6 +817,7 @@ export async function moveToFolder(
     fileIds,
     conflictResolveType,
     deleteAfter,
+    toFillOut,
   };
   const res = (await request({
     method: "put",

@@ -51,6 +51,7 @@ export type TContextButtonProps = {
     setAnimationClasses: (classes: string[]) => void,
   ) => () => void;
   guidAnimationVisible?: boolean;
+  setGuidAnimationVisible?: (visible: boolean) => void;
 };
 
 export type TPlusButtonProps = {
@@ -104,6 +105,7 @@ export type TNavigationLogoProps = {
 export type TOnNavigationItemClick = (
   id: string | number,
   isRootRoom: boolean,
+  isRootTemplates?: boolean,
 ) => void;
 
 export type TNavigationItemProps = {
@@ -115,12 +117,14 @@ export type TNavigationItemProps = {
   withLogo: boolean | string;
   currentDeviceType: DeviceType;
   style?: React.CSSProperties;
+  isRootTemplates?: boolean;
 };
 
 export type TNavigationItem = {
   id: string | number;
   title: string;
   isRootRoom: boolean;
+  isRootTemplates?: boolean;
 };
 
 export type TRowParam = {
@@ -173,7 +177,6 @@ export type TDropBoxProps = TArrowButtonProps &
     | "onNavigationButtonClick"
     | "navigationButtonLabel"
     | "showTitle"
-    | "isPublicRoom"
     | "isMobile"
   > &
   TRowParam & {

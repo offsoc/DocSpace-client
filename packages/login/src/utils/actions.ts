@@ -45,6 +45,7 @@ import {
   TThirdPartyProvider,
   TTimeZone,
   TVersionBuild,
+  TInvitationSettings,
 } from "@docspace/shared/api/settings/types";
 import { Encoder } from "@docspace/shared/utils/encoder";
 import {
@@ -72,6 +73,7 @@ import {
   scopesHandler,
   companyInfoHandler,
   oauthSignInHelper,
+  invitationSettingsHandler,
 } from "@docspace/shared/__mocks__/e2e";
 
 const IS_TEST = process.env.E2E_TEST;
@@ -142,9 +144,9 @@ export async function getColorTheme() {
   return colorTheme.response as TGetColorTheme;
 }
 
-export async function getThirdPartyProviders() {
+export async function getThirdPartyProviders(inviteView: boolean = false) {
   const [getThirdParty] = createRequest(
-    [`/people/thirdparty/providers`],
+    [`/people/thirdparty/providers?inviteView=${inviteView}`],
     [["", ""]],
     "GET",
   );
@@ -251,7 +253,7 @@ export async function getUserByEmail(
   return user.response as TUser;
 }
 
-export async function getScopeList(token?: string) {
+export async function getScopeList(token?: string, userId?: string) {
   const headers: [string, string][] = token
     ? [["Cookie", `x-signature=${token}`]]
     : [["", ""]];
@@ -480,56 +482,7 @@ export async function getAvailablePortals(data: {
   recaptchaResponse?: string | null | undefined;
   recaptchaType?: unknown | undefined;
 }) {
-  const config = await getConfig();
-
   const path = `/portal/signin`;
-
-  if (config?.oauth2?.apiSystem.length) {
-    const urls: string[] = config.oauth2.apiSystem.map(
-      (url: string) => `https://${url}/apisystem${path}`,
-    );
-
-    const actions = await Promise.allSettled(
-      urls.map((url: string) =>
-        fetch(url, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-            ...new Headers(headers()),
-          },
-        }),
-      ),
-    );
-
-    const fullFiledActions = actions.filter(
-      (action) => action.status === "fulfilled",
-    );
-
-    if (fullFiledActions.length) {
-      const portalsRes = fullFiledActions
-        .filter((action) => {
-          return action.value.ok;
-        })
-        .map((action) => action.value);
-
-      if (!portalsRes.length) {
-        const portals = await fullFiledActions[0].value.json();
-
-        return { ...portals, status: fullFiledActions[0].status };
-      }
-
-      const portals = (await Promise.all(portalsRes.map((res) => res.json())))
-        .map(
-          (portals: {
-            tenants: { portalLink: string; portalName: string }[];
-          }) => portals.tenants,
-        )
-        .flat();
-
-      return portals;
-    }
-  }
 
   const portalsRes = IS_TEST
     ? oauthSignInHelper()
@@ -566,4 +519,22 @@ export async function getOauthJWTToken() {
   const jwtToken = await res.json();
 
   return jwtToken.response as string;
+}
+
+export async function getInvitationSettings() {
+  const [getInvitationSettings] = createRequest(
+    [`/settings/invitationsettings`],
+    [["", ""]],
+    "GET",
+  );
+
+  const res = IS_TEST
+    ? invitationSettingsHandler()
+    : await fetch(getInvitationSettings);
+
+  if (!res.ok) return;
+
+  const invitationSettings = await res.json();
+
+  return invitationSettings.response as TInvitationSettings;
 }

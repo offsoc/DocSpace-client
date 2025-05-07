@@ -35,7 +35,7 @@ import classnames from "classnames";
 
 import { inject, observer } from "mobx-react";
 import { withTranslation } from "react-i18next";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router";
 
 import { SectionHeaderSkeleton } from "@docspace/shared/skeletons/sections";
 import Navigation from "@docspace/shared/components/navigation";
@@ -259,9 +259,8 @@ const SectionHeaderContent = (props) => {
   };
 
   const onContextOptionsClick = () => {
-    isContactsInsideGroupPage
-      ? setGroupsBufferSelection(currentGroup)
-      : setBufferSelection(selectedFolder);
+    if (isContactsInsideGroupPage) setGroupsBufferSelection(currentGroup);
+    else if (!isContactsPage) setBufferSelection(selectedFolder);
   };
 
   const onSelect = (e) => {
@@ -304,12 +303,12 @@ const SectionHeaderContent = (props) => {
       : setSelected(checked ? "all" : "none");
   };
 
-  const onClickFolder = async (id, isRootRoom) => {
+  const onClickFolder = async (id, isRootRoom, isRootTemplates) => {
     if (isPublicRoom) {
       return moveToPublicRoom(id);
     }
 
-    if (isRootRoom) {
+    if (isRootRoom || isRootTemplates) {
       return moveToRoomsPage();
     }
 
@@ -577,6 +576,10 @@ const SectionHeaderContent = (props) => {
       : "";
 
   const isContextButtonVisible = () => {
+    if (isContactsPage && !isContactsInsideGroupPage) {
+      return false;
+    }
+
     if (isPersonalReadOnly) {
       return isRootFolder;
     }
@@ -677,6 +680,7 @@ const SectionHeaderContent = (props) => {
                 addButtonRef={addButtonRefCallback}
                 contextButtonAnimation={contextButtonAnimation}
                 guidAnimationVisible={guidAnimationVisible}
+                setGuidAnimationVisible={setGuidAnimationVisible}
                 isContextButtonVisible={isContextButtonVisible()}
               />
               {showSignInButton ? (
@@ -963,7 +967,7 @@ export default inject(
       theme,
       isFrame,
       showTitle: frameConfig?.showTitle,
-      hideInfoPanel: isFrame && !frameConfig?.infoPanelVisible,
+      hideInfoPanel: isFrame,
       showMenu: frameConfig?.showMenu,
       currentDeviceType,
       insideGroupTempTitle,

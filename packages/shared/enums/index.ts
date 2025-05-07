@@ -201,6 +201,7 @@ export const enum RoomSearchArea {
 export const enum FileAction {
   Create = 0,
   Rename = 1,
+  RestoreVersion = 2,
 }
 
 /**
@@ -765,4 +766,9 @@ export enum WebhookTriggers {
   RoomDeleted = 33554432,
   RoomRestored = 67108864,
   RoomCopied = 134217728,
+}
+
+export enum RoomSecurityError {
+  None,
+  FormRoleBlockingDeletion,
 }

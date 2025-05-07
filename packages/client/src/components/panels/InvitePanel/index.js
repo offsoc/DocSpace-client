@@ -27,7 +27,7 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { observer, inject } from "mobx-react";
 import { withTranslation, Trans } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import {
   EmployeeType,
@@ -70,8 +70,6 @@ const InvitePanel = ({
   updateInfoPanelMembers,
   isRoomMembersPanelOpen,
   setInviteLanguage,
-  getUsersList,
-  filter,
   isRoomAdmin,
   setIsNewUserByCurrentUser,
 
@@ -80,6 +78,10 @@ const InvitePanel = ({
   standalone,
   hideSelector,
   isUserTariffLimit,
+
+  allowInvitingGuests,
+  checkGuests,
+  hasGuests,
 }) => {
   const [invitePanelIsLoding, setInvitePanelIsLoading] = useState(
     roomId !== -1,
@@ -96,6 +98,7 @@ const InvitePanel = ({
   const [inputValue, setInputValue] = useState("");
   const [usersList, setUsersList] = useState([]);
   const [cultureKey, setCultureKey] = useState();
+  const [showGuestsTab, setShowGuestsTab] = useState(true);
 
   const navigate = useNavigate();
 
@@ -208,6 +211,14 @@ const InvitePanel = ({
   };
 
   useEffect(() => {
+    if (!allowInvitingGuests) checkGuests();
+  }, [allowInvitingGuests]);
+
+  useEffect(() => {
+    if (typeof hasGuests === "boolean") setShowGuestsTab(hasGuests);
+  }, [hasGuests]);
+
+  useEffect(() => {
     if (roomId === -1) {
       setShareLinks(accessModel);
       return;
@@ -224,7 +235,11 @@ const InvitePanel = ({
       return inviteItems.some((item) => !!item.errors?.length);
     };
 
-    setHasErrors(hasValidationErrors());
+    const needRemoveGuests = !allowInvitingGuests
+      ? inviteItems.some((item) => item.userType === EmployeeType.Guest)
+      : false;
+
+    setHasErrors(hasValidationErrors() || needRemoveGuests);
   }, [inviteItems]);
 
   useEffect(() => {
@@ -362,9 +377,7 @@ const InvitePanel = ({
         const isPeoplePage =
           window.location.pathname.includes("accounts/people");
 
-        if (isPeoplePage) {
-          await getUsersList(filter, false);
-        } else {
+        if (!isPeoplePage) {
           navigate("/accounts/people/filter");
         }
       }
@@ -530,7 +543,7 @@ const InvitePanel = ({
             withGroups={!isPublicRoomType}
             roomId={roomId}
             disableInvitedUsers={invitedUsersArray}
-            withGuests
+            withGuests={showGuestsTab}
             withHeader
             headerProps={{
               // Todo: Update groups empty screen texts when they are ready
@@ -577,7 +590,6 @@ const InvitePanel = ({
 export default inject(
   ({
     settingsStore,
-    peopleStore,
     filesStore,
     dialogsStore,
     infoPanelStore,
@@ -585,9 +597,9 @@ export default inject(
     currentQuotaStore,
     userStore,
   }) => {
-    const { theme, standalone } = settingsStore;
+    const { theme, standalone, allowInvitingGuests, checkGuests, hasGuests } =
+      settingsStore;
 
-    const { getUsersList, filter } = peopleStore.usersStore;
     const {
       setIsMobileHidden: setInfoPanelIsMobileHidden,
       updateInfoPanelMembers,
@@ -625,8 +637,6 @@ export default inject(
       setInfoPanelIsMobileHidden,
       updateInfoPanelMembers,
       isRoomMembersPanelOpen,
-      getUsersList,
-      filter,
       isRoomAdmin,
 
       setIsNewUserByCurrentUser,
@@ -635,6 +645,9 @@ export default inject(
       hideSelector: invitePanelOptions.hideSelector,
       isUserTariffLimit,
       isAdmin,
+      allowInvitingGuests,
+      checkGuests,
+      hasGuests,
     };
   },
 )(

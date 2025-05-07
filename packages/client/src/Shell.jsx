@@ -26,7 +26,7 @@
 
 import moment from "moment-timezone";
 import React, { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router";
 import { useTheme } from "styled-components";
 import { inject, observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
@@ -47,7 +47,7 @@ import indexedDbHelper from "@docspace/shared/utils/indexedDBHelper";
 import { useThemeDetector } from "@docspace/shared/hooks/useThemeDetector";
 import { sendToastReport } from "@docspace/shared/utils/crashReport";
 import { combineUrl } from "@docspace/shared/utils/combineUrl";
-
+import { getCookie, deleteCookie } from "@docspace/shared/utils/cookie";
 import "@docspace/shared/styles/theme.scss";
 
 import config from "PACKAGE_FILE";
@@ -97,6 +97,8 @@ const Shell = ({ page = "home", ...rest }) => {
     registrationDate,
     logoText,
     setLogoText,
+    standalone,
+    isGuest,
   } = rest;
 
   const theme = useTheme();
@@ -145,6 +147,12 @@ const Shell = ({ page = "home", ...rest }) => {
       roomParts: "restore",
     });
 
+    if (standalone) {
+      SocketHelper.emit(SocketCommands.SubscribeInSpaces, {
+        roomParts: "restore",
+      });
+    }
+
     SocketHelper.emit(SocketCommands.Subscribe, {
       roomParts: "quota",
     });
@@ -156,7 +164,26 @@ const Shell = ({ page = "home", ...rest }) => {
   }, []);
 
   useEffect(() => {
+    if (standalone) {
+      SocketHelper.emit(SocketCommands.SubscribeInSpaces, {
+        roomParts: "restore",
+      });
+    }
+  }, [standalone]);
+
+  useEffect(() => {
     SocketHelper.emit(SocketCommands.Subscribe, { roomParts: userId });
+  }, [userId]);
+
+  useEffect(() => {
+    if (isGuest && userId) {
+      const token = getCookie(`x-signature`);
+
+      if (token) {
+        deleteCookie(`x-signature-${userId}`);
+        deleteCookie("x-signature");
+      }
+    }
   }, [userId]);
 
   useEffect(() => {
@@ -542,6 +569,7 @@ const ShellWrapper = inject(
       buildVersionInfo,
       logoText,
       setLogoText,
+      standalone,
     } = settingsStore;
 
     const isBase = settingsStore.theme.isBase;
@@ -602,6 +630,7 @@ const ShellWrapper = inject(
       userLoginEventId: userStore?.user?.loginEventId,
       isOwner: userStore?.user?.isOwner,
       isAdmin: userStore?.user?.isAdmin,
+      isGuest: userStore?.user?.isVisitor,
       registrationDate: userStore?.user?.registrationDate,
 
       currentDeviceType,
@@ -617,6 +646,7 @@ const ShellWrapper = inject(
       releaseDate: buildVersionInfo.releaseDate,
       logoText,
       setLogoText,
+      standalone,
     };
   },
 )(observer(Shell));

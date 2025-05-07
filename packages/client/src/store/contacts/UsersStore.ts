@@ -192,14 +192,19 @@ class UsersStore {
 
       const user = await api.people.getUserById(data.id);
 
+      const { setInfoPanelSelection, isVisible } = this.infoPanelStore;
+
       runInAction(() => {
         this.users[idx] = user;
+
+        if (isVisible) setInfoPanelSelection(this.getPeopleListItem(user));
       });
     };
 
     const deleteUser = (id: string) => {
       console.log(`[WS] ${SocketEvents.DeleteUser}, id: ${id}`);
       const idx = this.users.findIndex((x) => x.id === id);
+      const { setInfoPanelSelection, isVisible } = this.infoPanelStore;
 
       if (idx === -1) return;
 
@@ -208,6 +213,8 @@ class UsersStore {
         newUsers.splice(idx, 1);
         this.users = newUsers;
         this.filter.total -= 1;
+
+        if (isVisible) setInfoPanelSelection(null);
       });
     };
 

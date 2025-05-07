@@ -65,6 +65,7 @@ export const FillingStatusPanel = ({
   user,
   onDelete,
   onResetFilling,
+  withBorder,
 }: FillingStatusPanelProps) => {
   const { t } = useTranslation(["Common"]);
   const [value, setValue] = useLocalStorage(
@@ -117,6 +118,7 @@ export const FillingStatusPanel = ({
       onClose={onClose}
       isLoading={isLoading}
       displayType={ModalDialogType.aside}
+      withBorder={withBorder}
     >
       <ModalDialog.Header>{t("Common:FillingStatus")}</ModalDialog.Header>
       <ModalDialog.Body>
@@ -126,18 +128,21 @@ export const FillingStatusPanel = ({
             bodyText={t("Common:FillingStatusBarDescription")}
             iconName={InfoSvgUrl}
             onClose={() => setValue(false)}
+            className={styles.infoBar}
           />
         ) : null}
         <div className={styles.fileInfo}>
           <PDFIcon />
           <Text className={styles.fileName}>{fileName}</Text>
-          <div
-            title={fileStatusTitle}
-            className={styles.fileStatus}
-            style={{ backgroundColor: color }}
-          >
-            <span>{fileStatusLabel}</span>
-          </div>
+          {fillingStatus ? (
+            <div
+              title={fileStatusTitle}
+              className={styles.fileStatus}
+              style={{ backgroundColor: color }}
+            >
+              <span>{fileStatusLabel}</span>
+            </div>
+          ) : null}
         </div>
         <div className={styles.processContainer}>
           <Heading

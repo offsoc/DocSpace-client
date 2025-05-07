@@ -299,7 +299,6 @@ const config = {
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "static/styles/[name].[contenthash].css",
-      chunkFilename: "static/styles/[id].[contenthash].css",
       ignoreOrder: true,
     }),
     new ExternalTemplateRemotesPlugin(),
@@ -381,6 +380,20 @@ module.exports = (env, argv) => {
     };
   }
 
+  // Extract css processed by MiniCssExtractPlugin in a single file
+  config.optimization = {
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: "styles",
+          type: "css/mini-extract",
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
+  };
+
   config.plugins.push(
     new ModuleFederationPlugin({
       name: "client",
@@ -418,18 +431,8 @@ module.exports = (env, argv) => {
         "./ConnectDialog": "./src/components/dialogs/ConnectDialog",
       },
       shared: {
-        ...Object.entries(deps).reduce((acc, [key, value]) => {
-          if (key !== "@onlyoffice/docspace-sdk-js") {
-            acc[key] = value;
-          }
-          return acc;
-        }, {}),
+        ...deps,
         ...sharedDeps,
-        "@onlyoffice/docspace-sdk-js": {
-          singleton: true,
-          eager: true,
-          requiredVersion: deps["@onlyoffice/docspace-sdk-js"],
-        },
       },
     }),
   );

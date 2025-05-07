@@ -26,7 +26,7 @@
 
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { isMobileOnly } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 
@@ -93,9 +93,12 @@ const App = observer(() => {
       SocketHelper.emit(SocketCommands.Subscribe, {
         roomParts: "restore",
       });
+      SocketHelper.emit(SocketCommands.SubscribeInSpaces, {
+        roomParts: "restore",
+      });
     }
     if (!socketSubscribers.has("backup")) {
-      SocketHelper.emit(SocketCommands.Subscribe, {
+      SocketHelper.emit(SocketCommands.SubscribeInSpaces, {
         roomParts: "backup",
       });
     }
@@ -104,7 +107,8 @@ const App = observer(() => {
   useEffect(() => {
     return () => {
       SocketHelper.off(SocketEvents.BackupProgress);
-      SocketHelper.emit(SocketCommands.Unsubscribe, {
+
+      SocketHelper.emit(SocketCommands.UnsubscribeInSpaces, {
         roomParts: "backup",
       });
     };

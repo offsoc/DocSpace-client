@@ -31,7 +31,7 @@ import { useTranslation } from "react-i18next";
 
 import DownloadAsReactSvgUrl from "PUBLIC_DIR/images/download-as.react.svg?url";
 import VerticalDotsReactSvgUrl from "PUBLIC_DIR/images/icons/16/vertical-dots.react.svg?url";
-import ProtectedReactSvgUrl from "PUBLIC_DIR/images/icons/16/protected.react.svg?url";
+import RemoveIcon from "PUBLIC_DIR/images/remove.react.svg?url";
 
 import { toastr } from "../../../components/toast";
 import { ContextMenuButton } from "../../../components/context-menu-button";
@@ -39,9 +39,10 @@ import { ModalDialog, ModalDialogType } from "../../../components/modal-dialog";
 import { Button, ButtonSize } from "../../../components/button";
 import { Text } from "../../../components/text";
 import { SimulatePassword } from "../../../components/simulate-password";
+import { isMobile } from "../../../utils";
 
 import styles from "../DownloadDialog.module.scss";
-import type { OnePasswordRowProps } from "../DownloadDialog.types";
+import { isFile, type OnePasswordRowProps } from "../DownloadDialog.types";
 
 export const OnePasswordRow = ({
   item,
@@ -73,7 +74,8 @@ export const OnePasswordRow = ({
     [downloadItems],
   );
 
-  const onDowloadInOriginal = () => {
+  const onDownloadInOriginal = () => {
+    if (!isFile(item)) return;
     const files = updateDownloadItem(item.id, { format: item.fileExst });
     onDownload(files);
   };
@@ -126,7 +128,7 @@ export const OnePasswordRow = ({
       {
         key: "original-format",
         label: t("Common:OriginalFormat"),
-        onClick: onDowloadInOriginal,
+        onClick: onDownloadInOriginal,
         disabled: false,
         icon: DownloadAsReactSvgUrl,
       },
@@ -135,7 +137,7 @@ export const OnePasswordRow = ({
         label: t("Common:CancelDownload"),
         onClick: onRemoveFromDownload,
         disabled: false,
-        icon: ProtectedReactSvgUrl,
+        icon: RemoveIcon,
       },
     ];
 
@@ -163,12 +165,14 @@ export const OnePasswordRow = ({
                 fontWeight="600"
                 fontSize="14px"
                 className={styles.passwordTitle}
+                truncate
+                dir="auto"
               >
                 {item.title}
               </Text>
             </div>
             <ContextMenuButton
-              directionX="right"
+              directionX={isMobile() ? "left" : "right"}
               getData={getOptions}
               title={t("Common:Actions")}
               isDisabled={false}
@@ -179,6 +183,7 @@ export const OnePasswordRow = ({
           <SimulatePassword
             onChange={onChangePassword}
             forwardedRef={inputRef}
+            inputMaxWidth="none"
           />
         </div>
       </ModalDialog.Body>

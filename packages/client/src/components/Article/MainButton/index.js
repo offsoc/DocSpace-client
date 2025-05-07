@@ -50,7 +50,7 @@ import { toastr } from "@docspace/shared/components/toast";
 import { Button } from "@docspace/shared/components/button";
 
 import { withTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
 import {
   Events,
   DeviceType,
@@ -79,7 +79,8 @@ const StyledButton = styled(Button)`
       $currentColorScheme.main?.accent} !important;
     background: ${({ $currentColorScheme }) =>
       $currentColorScheme.main?.accent};
-    border: ${({ $currentColorScheme }) => $currentColorScheme.main?.accent};
+    border-color: ${({ $currentColorScheme }) =>
+      $currentColorScheme.main?.accent};
 
     ${(props) =>
       !props.isDisabled &&
@@ -90,7 +91,7 @@ const StyledButton = styled(Button)`
           opacity: 0.85;
           background: ${({ $currentColorScheme }) =>
             $currentColorScheme.main?.accent};
-          border: ${({ $currentColorScheme }) =>
+          border-color: ${({ $currentColorScheme }) =>
             $currentColorScheme.main?.accent};
         }
 
@@ -99,8 +100,8 @@ const StyledButton = styled(Button)`
             $currentColorScheme.main?.accent};
           background: ${({ $currentColorScheme }) =>
             $currentColorScheme.main?.accent};
-          border: ${({ $currentColorScheme }) =>
-            $currentColorScheme.main?.accent};
+          border-color: ${({ $currentColorScheme }) =>
+            $currentColorScheme.main?.accent} !important;
           opacity: 1;
           filter: brightness(90%);
           cursor: pointer;
@@ -209,7 +210,7 @@ const ArticleMainButtonContent = (props) => {
       const isPDF = format === "pdf";
 
       if (isPDF && isMobile) {
-        toastr.info(t("Files:MobileEditPdfNotAvailableInfo"));
+        toastr.info(t("Common:MobileEditPdfNotAvailableInfo"));
         return;
       }
 
@@ -237,7 +238,7 @@ const ArticleMainButtonContent = (props) => {
 
   const onShowSelectFileDialog = React.useCallback(() => {
     if (isMobile) {
-      toastr.info(t("Files:MobileEditPdfNotAvailableInfo"));
+      toastr.info(t("Common:MobileEditPdfNotAvailableInfo"));
       return;
     }
     setSelectFileDialogVisible(true);
@@ -294,7 +295,7 @@ const ArticleMainButtonContent = (props) => {
 
   const onShowGallery = () => {
     if (isMobile) {
-      toastr.info(t("Files:MobileEditPdfNotAvailableInfo"));
+      toastr.info(t("Common:MobileEditPdfNotAvailableInfo"));
       return;
     }
 
@@ -720,14 +721,13 @@ const ArticleMainButtonContent = (props) => {
     isRoomAdmin && isAccountsPage ? t("Common:Invite") : t("Common:Actions");
 
   let isDisabled = false;
-  if (isFrame) {
-    isDisabled = disableActionButton;
-  } else if (isSettingsPage) {
+
+  if (isSettingsPage) {
     isDisabled = isSettingsPage;
   } else if (isAccountsPage) {
-    isDisabled = !contactsCanCreate;
+    isDisabled = (isFrame && disableActionButton) || !contactsCanCreate;
   } else {
-    isDisabled = !security?.Create;
+    isDisabled = (isFrame && disableActionButton) || !security?.Create;
   }
 
   if (showArticleLoader)
