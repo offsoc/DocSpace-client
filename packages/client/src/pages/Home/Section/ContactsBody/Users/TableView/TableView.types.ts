@@ -156,7 +156,7 @@ export type TableHeaderProps = {
   setFilter?: UsersStore["setFilter"];
   contactsTab?: UsersStore["contactsTab"];
 
-  setIsLoading?: ClientLoadingStore["setIsSectionBodyLoading"];
+  setIsFiltered?: ClientLoadingStore["setIsFiltered"];
 
   isRoomAdmin?: TUser["isRoomAdmin"];
 

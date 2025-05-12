@@ -184,7 +184,7 @@ class PeopleTableHeader extends React.Component<
   };
 
   onFilter = (sortBy: TFilterSortBy) => {
-    const { filter, setFilter, setIsLoading, navigate, location } = this.props;
+    const { filter, setFilter, navigate, location, setIsFiltered } = this.props;
     const newFilter = filter!.clone();
 
     if (
@@ -201,7 +201,7 @@ class PeopleTableHeader extends React.Component<
       }
     }
 
-    setIsLoading!(true);
+    setIsFiltered!(true);
     setFilter!(newFilter);
     navigate(`${location.pathname}?${newFilter.toUrlParams()}`);
   };
@@ -270,7 +270,7 @@ export default inject(
       filter,
       setFilter,
 
-      setIsLoading: clientLoadingStore.setIsSectionBodyLoading,
+      setIsFiltered: clientLoadingStore.setIsFiltered,
 
       isRoomAdmin: userStore.user?.isRoomAdmin,
 

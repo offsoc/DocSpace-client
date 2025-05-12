@@ -40,6 +40,7 @@ import FilesStore from "SRC_DIR/store/FilesStore";
 import UsersStore from "SRC_DIR/store/contacts/UsersStore";
 import GroupsStore from "SRC_DIR/store/contacts/GroupsStore";
 import DialogsStore from "SRC_DIR/store/DialogsStore";
+import ClientLoadingStore from "SRC_DIR/store/ClientLoadingStore";
 
 type UseContactsProps = {
   isContactsPage: boolean;
@@ -61,6 +62,9 @@ type UseContactsProps = {
 
   showGuestReleaseTip: SettingsStore["showGuestReleaseTip"];
   setGuestReleaseTipDialogVisible: DialogsStore["setGuestReleaseTipDialogVisible"];
+
+  isFiltered: ClientLoadingStore["isFiltered"];
+  setIsFiltered: ClientLoadingStore["setIsFiltered"];
 };
 
 const useContacts = ({
@@ -79,6 +83,9 @@ const useContacts = ({
 
   showGuestReleaseTip,
   setGuestReleaseTipDialogVisible,
+
+  isFiltered,
+  setIsFiltered,
 }: UseContactsProps) => {
   const { groupId } = useParams();
   const location = useLocation();
@@ -89,7 +96,7 @@ const useContacts = ({
 
     if (showGuestReleaseTip) setGuestReleaseTipDialogVisible(true);
 
-    setIsLoading(true);
+    if (!isFiltered) setIsLoading(true);
     setContactsTab(contactsView);
 
     const isInsideGroup = contactsView === "inside_group";
@@ -125,6 +132,7 @@ const useContacts = ({
 
       scrollToTop();
       setIsLoading(false);
+      setIsFiltered(false);
     };
 
     getList();

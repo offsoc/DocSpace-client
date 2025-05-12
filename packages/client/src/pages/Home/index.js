@@ -168,8 +168,8 @@ const PureHome = (props) => {
     allowInvitingGuests,
     checkGuests,
     hasGuests,
-    filesIsFiltered,
-    setFilesIsFiltered,
+    isFiltered,
+    setIsFiltered,
   } = props;
 
   // console.log(t("ComingSoon"))
@@ -233,8 +233,8 @@ const PureHome = (props) => {
     scrollToTop,
     selectedFolderStore,
     wsCreatedPDFForm,
-    filesIsFiltered,
-    setFilesIsFiltered,
+    isFiltered,
+    setIsFiltered,
   });
 
   useOperations({
@@ -260,6 +260,9 @@ const PureHome = (props) => {
 
     showGuestReleaseTip,
     setGuestReleaseTipDialogVisible,
+
+    isFiltered,
+    setIsFiltered,
   });
 
   useSettings({
@@ -700,8 +703,8 @@ export const Component = inject(
       allowInvitingGuests,
       checkGuests,
       hasGuests,
-      filesIsFiltered: clientLoadingStore.isFiltered,
-      setFilesIsFiltered: clientLoadingStore.setIsFiltered,
+      isFiltered: clientLoadingStore.isFiltered,
+      setIsFiltered: clientLoadingStore.setIsFiltered,
     };
   },
 )(observer(Home));
