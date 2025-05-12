@@ -746,10 +746,10 @@ class FilesTableHeader extends React.Component {
   onFilter = (sortBy) => {
     const {
       filter,
-      setIsLoading,
       isPublicRoom,
       publicRoomKey,
       isPublicRoomType,
+      setIsFiltered,
     } = this.props;
     const newFilter = filter.clone();
 
@@ -760,7 +760,7 @@ class FilesTableHeader extends React.Component {
         newFilter.sortOrder === "ascending" ? "descending" : "ascending";
     }
 
-    setIsLoading(true);
+    setIsFiltered(true);
 
     const currentUrl = window.location.href;
 
@@ -777,7 +777,7 @@ class FilesTableHeader extends React.Component {
   };
 
   onRoomsFilter = (sortBy) => {
-    const { roomsFilter, setIsLoading, navigate, location, setRoomsFilter } =
+    const { roomsFilter, navigate, location, setRoomsFilter, setIsFiltered } =
       this.props;
 
     const newFilter = roomsFilter.clone();
@@ -789,7 +789,7 @@ class FilesTableHeader extends React.Component {
         newFilter.sortOrder === "ascending" ? "descending" : "ascending";
     }
 
-    setIsLoading(true);
+    setIsFiltered(true);
     setRoomsFilter(newFilter);
     navigate(`${location.pathname}?${newFilter.toUrlParams()}`);
   };
@@ -957,7 +957,7 @@ export default inject(
 
       isIndexing: isIndexedFolder,
 
-      setIsLoading: clientLoadingStore.setIsSectionBodyLoading,
+      setIsFiltered: clientLoadingStore.setIsFiltered,
 
       roomsFilter,
 

@@ -78,6 +78,8 @@ const useFiles = ({
   scrollToTop,
   selectedFolderStore,
   wsCreatedPDFForm,
+  filesIsFiltered,
+  setFilesIsFiltered,
 }) => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -142,7 +144,8 @@ const useFiles = ({
   React.useEffect(() => {
     if (isContactsPage || isSettingsPage) return;
 
-    if (location.pathname === "/") setIsLoading(true, true, true);
+    if (filesIsFiltered) setIsLoading(false);
+    else if (location.pathname === "/") setIsLoading(true, true, true);
     else setIsLoading(true, false, false);
 
     const categoryType = getCategoryType(location);
@@ -310,8 +313,15 @@ const useFiles = ({
       .finally(() => {
         scrollToTop();
         setIsLoading(false);
+        setFilesIsFiltered(false);
       });
-  }, [isContactsPage, isSettingsPage, location.pathname, location.search]);
+  }, [
+    isContactsPage,
+    isSettingsPage,
+    location.pathname,
+    location.search,
+    filesIsFiltered,
+  ]);
 
   return { onDrop };
 };

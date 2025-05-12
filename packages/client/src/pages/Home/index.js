@@ -168,6 +168,8 @@ const PureHome = (props) => {
     allowInvitingGuests,
     checkGuests,
     hasGuests,
+    filesIsFiltered,
+    setFilesIsFiltered,
   } = props;
 
   // console.log(t("ComingSoon"))
@@ -231,6 +233,8 @@ const PureHome = (props) => {
     scrollToTop,
     selectedFolderStore,
     wsCreatedPDFForm,
+    filesIsFiltered,
+    setFilesIsFiltered,
   });
 
   useOperations({
@@ -696,6 +700,8 @@ export const Component = inject(
       allowInvitingGuests,
       checkGuests,
       hasGuests,
+      filesIsFiltered: clientLoadingStore.isFiltered,
+      setFilesIsFiltered: clientLoadingStore.setIsFiltered,
     };
   },
 )(observer(Home));

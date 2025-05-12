@@ -97,6 +97,7 @@ const ClientContent = (props) => {
     isDesktopClientInit,
     setIsDesktopClientInit,
     showArticleLoader,
+    isFiltered,
   } = props;
 
   const location = useLocation();
@@ -144,12 +145,12 @@ const ClientContent = (props) => {
   ]);
 
   React.useEffect(() => {
-    if (isLoading) {
+    if (isLoading || isFiltered) {
       showLoader();
     } else {
       hideLoader();
     }
-  }, [isLoading]);
+  }, [isLoading, isFiltered]);
 
   return (
     <>
@@ -212,6 +213,7 @@ export const Client = inject(
       setIsSectionFilterLoading,
       setIsSectionHeaderLoading,
       showArticleLoader,
+      isFiltered,
     } = clientLoadingStore;
 
     const withMainButton = true; // !isVisitor; // Allways true for any type of users
@@ -240,6 +242,8 @@ export const Client = inject(
       isLoading,
       setEncryptionKeys,
       showArticleLoader,
+      isFiltered,
+
       loadClientInfo: async () => {
         const actions = [];
         actions.push(filesStore.initFiles());

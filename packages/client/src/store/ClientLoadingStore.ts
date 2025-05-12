@@ -47,6 +47,8 @@ class ClientLoadingStore {
 
   isProfileLoaded: boolean = false;
 
+  isFiltered: boolean = false;
+
   loaderStates: Record<SectionType, LoaderState> = {
     header: {
       isLoading: false,
@@ -207,6 +209,10 @@ class ClientLoadingStore {
     withTimer: boolean = true,
   ) => {
     this.setIsLoading("body", isSectionBodyLoading, withTimer);
+  };
+
+  setIsFiltered = (isFiltered: boolean) => {
+    this.isFiltered = isFiltered;
   };
 
   get isLoading() {
