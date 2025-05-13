@@ -87,6 +87,7 @@ const SectionFilterContent = ({
   createThumbnails,
   setViewAs,
   setIsLoading,
+  setIsFiltered,
 
   fetchTags,
   infoPanelVisible,
@@ -171,7 +172,7 @@ const SectionFilterContent = ({
 
   const onFilter = React.useCallback(
     (data) => {
-      setIsLoading(true);
+      setIsFiltered(true);
       if (isContactsPage) {
         onContactsFilter(data);
       } else if (isRooms) {
@@ -269,7 +270,7 @@ const SectionFilterContent = ({
       isRooms,
       isTrash,
       isRecentTab,
-      setIsLoading,
+      setIsFiltered,
       roomsFilter,
       filter,
 
@@ -284,7 +285,7 @@ const SectionFilterContent = ({
       return;
     }
 
-    setIsLoading(true);
+    setIsFiltered(true);
     if (isRooms) {
       const newFilter = RoomsFilter.clean();
       newFilter.searchArea = roomsFilter.searchArea;
@@ -308,7 +309,7 @@ const SectionFilterContent = ({
     }
   }, [
     isRooms,
-    setIsLoading,
+    setIsFiltered,
 
     filter,
 
@@ -384,7 +385,7 @@ const SectionFilterContent = ({
     (sortId, sortDirection) => {
       const sortBy = sortId;
       const sortOrder = sortDirection === "desc" ? "descending" : "ascending";
-      setIsLoading(true);
+      setIsFiltered(true);
 
       if (isContactsPage) {
         return onContactsSort(sortBy, sortOrder);
@@ -417,7 +418,7 @@ const SectionFilterContent = ({
       isRooms,
 
       isContactsPage,
-      setIsLoading,
+      setIsFiltered,
       filter,
       roomsFilter,
 
@@ -1493,6 +1494,7 @@ export default inject(
       isIndexEditingMode,
 
       setIsLoading: clientLoadingStore.setIsSectionBodyLoading,
+      setIsFiltered: clientLoadingStore.setIsFiltered,
       showFilterLoader: clientLoadingStore.showFilterLoader,
 
       fetchTags,
