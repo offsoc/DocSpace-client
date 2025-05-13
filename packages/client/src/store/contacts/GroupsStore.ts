@@ -232,7 +232,6 @@ class GroupsStore {
     updateFilter = false,
     withFilterLocalStorage = false,
   ) => {
-    this.clientLoadingStore.setIsSectionBodyLoading(true);
     const filterData = filter ? filter.clone() : GroupsFilter.getDefault();
 
     this.setSelection([]);
@@ -264,7 +263,6 @@ class GroupsStore {
 
     if (updateFilter) this.setFilterParams(filterData);
 
-    this.clientLoadingStore.setIsSectionBodyLoading(false);
     this.groups = res.items || [];
   };
 

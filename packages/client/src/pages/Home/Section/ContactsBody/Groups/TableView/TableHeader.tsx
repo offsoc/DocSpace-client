@@ -57,7 +57,7 @@ type GroupsTableHeaderProps = {
   filter?: GroupsStore["groupsFilter"];
   setFilter?: GroupsStore["setGroupsFilter"];
 
-  setIsLoading?: ClientLoadingStore["setIsSectionBodyLoading"];
+  setIsFiltered?: ClientLoadingStore["setIsFiltered"];
 
   infoPanelVisible?: InfoPanelStore["isVisible"];
 
@@ -171,7 +171,7 @@ class GroupsTableHeader extends React.Component<
   };
 
   onFilter = (sortBy: string) => {
-    const { filter, setFilter, setIsLoading, navigate, location } = this.props;
+    const { filter, setFilter, setIsFiltered, navigate, location } = this.props;
 
     const newFilter = filter!.clone();
     const reverseSortOrder =
@@ -184,7 +184,7 @@ class GroupsTableHeader extends React.Component<
       if (sortBy === "AZ") newFilter.sortOrder = reverseSortOrder;
     }
 
-    setIsLoading!(true);
+    setIsFiltered!(true);
     setFilter!(newFilter);
     navigate(`${location.pathname}?${newFilter.toUrlParams()}`);
   };
@@ -239,7 +239,7 @@ export default inject(
   }: TStore) => ({
     filter: peopleStore.groupsStore!.groupsFilter,
     setFilter: peopleStore.groupsStore!.setGroupsFilter,
-    setIsLoading: clientLoadingStore.setIsSectionBodyLoading,
+    setIsFiltered: clientLoadingStore.setIsFiltered,
     userId: userStore.user?.id,
     infoPanelVisible: infoPanelStore.isVisible,
     getColumns: tableStore.getColumns,
